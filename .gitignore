@@ -1,1 +1,5 @@
+/assets/*
+!/assets/.gitkeep
 
+/courseware/*
+!/courseware/.gitkeep
