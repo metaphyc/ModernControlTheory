@@ -1,0 +1,170 @@
+% Shared LaTeX preamble for homework/*/main.tex
+
+% --- Base layout ---
+\usepackage[a4paper, top=2.5cm, bottom=2.5cm, left=2cm, right=2cm]{geometry}
+\usepackage{fontspec}
+\usepackage[UTF8]{ctex}%latex支持中文宏包
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{mathtools}
+\usepackage[svgnames]{xcolor}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage[most]{tcolorbox}
+\usepackage{enumitem}
+% Modified: Change label from hyphen (-) to bullet point ($\bullet$) for better visibility
+\setlist[itemize]{label=$\bullet$}
+\setlist[enumerate]{label=(\arabic*)}
+
+
+% --- Colors ---
+\definecolor{primaryColor}{RGB}{46, 52, 64}
+\definecolor{accentColor}{RGB}{94, 129, 172}
+\definecolor{boxFill}{RGB}{236, 240, 241}
+\definecolor{solLine}{RGB}{163, 190, 140}
+\definecolor{expandColor}{RGB}{191, 97, 106}
+
+% --- TikZ styles (DFA / NFA / PDA) ---
+\usepackage{tikz}
+\usetikzlibrary{automata, positioning, arrows.meta, bending, backgrounds}
+\tikzset{
+    dfa_state/.style={
+        state,
+        thick,
+        draw=accentColor,
+        fill=boxFill,
+        text=primaryColor,
+        minimum size=1.1cm
+    },
+    dfa_edge/.style={
+        ->,
+        >=stealth,
+        thick,
+        draw=primaryColor,
+        auto
+    },
+    pda_node/.style={
+        state,
+        thick,
+        draw=accentColor,
+        fill=boxFill,
+        text=primaryColor,
+        minimum size=1.2cm
+    },
+    pda_edge/.style={
+        ->,
+        >=stealth,
+        thick,
+        draw=primaryColor,
+        auto
+    },
+    rule_expand/.style={
+        pda_edge,
+        draw=expandColor,
+        text=expandColor
+    },
+    rule_match/.style={
+        pda_edge,
+        draw=solLine,
+        text=solLine!80!black
+    }
+}
+
+% --- Header / footer ---
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\setlength{\headheight}{13.6pt}%避免页眉高度警告
+\fancyhf{}
+\fancyhead[L]{\kaishu 中国科学院大学}
+\fancyhead[C]{林俊杰2023K8009916012}
+\fancyhead[R]{\kaishu 理论计算机}
+\usepackage{lastpage}
+\cfoot{\small 第 \thepage \ 页，共 \pageref{LastPage} 页}
+
+% --- Problem box ---
+\newtcolorbox[use counter=problemSeq]{problem}[1][]{
+    enhanced,
+    breakable,
+    colback=boxFill,
+    colframe=accentColor,
+    coltitle=white,
+    fonttitle=\bfseries\large,
+    title={题目 ~\theproblemSeq \quad #1},
+    boxrule=0.5mm,
+    arc=3mm,
+    drop shadow=black!15!white,
+    attach boxed title to top left={xshift=0.5cm, yshift*=-3mm},
+    boxed title style={colback=accentColor},
+    % 关键修改：每当创建一个新问题盒子时，自动将步骤计数器重置为0
+    code={\setcounter{stepcount}{0}}
+}
+
+% --- Solution 环境 (红色盒子样式，支持可选序号) ---
+% 修改说明：
+% 1. [1][] 表示接受一个可选参数，默认为空
+% 2. title={...} 中使用 \ifstrempty 判断是否有参数，如果有则添加空格和参数
+\newtcolorbox{solution}[1][]{
+    enhanced, breakable,
+    colback=red!3!white,        % 背景色：淡粉
+    colframe=red!75!black,      % 边框色：深红
+    coltitle=white,
+    fonttitle=\bfseries\Large\itshape,
+    title={Solution\ifstrempty{#1}{}{~#1}}, % 动态标题：Solution (1)
+    boxrule=0.5mm,
+    arc=3mm,
+    drop shadow=black!15!white,
+    attach boxed title to top left={xshift=0.5cm, yshift*=-3mm},
+    boxed title style={colback=red!75!black},
+    before skip=0.5em,          % 盒子前的间距
+    after skip=2em,             % 盒子后的间距
+    before upper={\setcounter{stepcount}{0}} % 每个解答开始时重置步骤计数
+}
+
+% --- Title ---
+\newcommand{\makeCustomTitle}[1]{
+    \begin{center}
+        \vspace*{1cm}
+        {\Huge \bfseries \color{primaryColor} 作业 #1}\\
+        \vspace{0.5cm}
+        {\Large \color{accentColor} \today}
+        \vspace{1.2cm}
+    \end{center}
+}
+
+% --- 自定义环境定义 ---
+
+% --- 自定义计数器与环境 ---
+\newcounter{stepcount}
+\newcounter{casecount}[stepcount]
+\newcounter{problemSeq} % 新增：专门用于 Problem 的独立计数器
+
+% 【关键修改】挂载钩子：每当遇到 \section 命令（含 \section*），将 problemSeq 计数器重置为 0
+\pretocmd{\section}{\setcounter{problemSeq}{0}}{}{}
+
+% 2. 定义带自动编号的步骤环境
+\newenvironment{proofstep}[1]
+  {%
+    \refstepcounter{stepcount}% 增加计数
+    \par\vspace{1.5em}%
+    \noindent\textbf{\large \thestepcount. #1}% 输出 "1. 标题"
+    \par\vspace{0.5em}%
+  }
+  {\par}
+
+% 3. 定义无编号的结论环境 (用于最后的结论，格式同步骤)
+\newenvironment{proofresult}[1]
+  {%
+    \par\vspace{1.5em}%
+    \noindent\textbf{\large #1}% 仅输出标题
+    \par\vspace{0.5em}%
+  }
+  {\par}
+
+% 4. 定义带自动编号的情形环境
+\newenvironment{proofcase}[1]
+  {%
+    \refstepcounter{casecount}% 增加计数
+    \par\vspace{1em}%
+    \noindent\textbf{情形 \thecasecount：#1}% 输出 "情形 1：标题"
+    \par\vspace{0.2em}%
+  }
+  {\par}
