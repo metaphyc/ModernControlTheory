@@ -1,0 +1,617 @@
+\documentclass[11pt]{article}
+\newcommand{\HomeworkHeader}{习题五}
+\input{../_shared/preamble.tex}
+\begin{document}
+\makeCustomTitle{习题五}
+% 红框选题及来源：原题 1(c)、4、5、6(4)（题面 PDF 第 2 页），6(7)、10（第 3 页）。
+% 第 1 题只选 (c)；第 4、5、10 题覆盖全部小问；第 6 题只选 (4)、(7)。
+
+\begin{problem}[原题 1(c)]
+已知系统系数矩阵
+\[
+A=\begin{bmatrix}0&0&1&0\\0&0&0&1\\0&0&-1&0\\0&0&0&1\end{bmatrix},\quad
+B=\begin{bmatrix}0&0\\0&0\\1&0\\0&1\end{bmatrix},\quad
+C=\begin{bmatrix}1&0&0&2\\0&0&2&1\end{bmatrix},\quad D=0.
+\]
+(1) 分析能控性和能观性；(2) 计算传递函数矩阵；(3) 进行能控能观性分解。
+\end{problem}
+\begin{solution}
+\begin{proofstep}{(1) 计算能控矩阵，判断能控性}
+系统为 $\dot x=Ax+Bu,\ y=Cx$。记 $e_i$ 为 $\mathbb R^4$ 的第 $i$ 个标准基向量，则
+\[
+B=[e_3\ e_4],\qquad Ae_3=e_1-e_3,\qquad Ae_4=e_2+e_4.
+\]
+这说明输入可以直接作用于 $e_3,e_4$ 方向，并通过状态演化产生 $e_1,e_2$ 方向。
+相应地，完整能控矩阵 $\mathcal C=[B,AB,A^2B,A^3B]$ 的前四列已经构成方阵
+\[
+[B,AB]=\begin{bmatrix}0&0&1&0\\0&0&0&1\\1&0&-1&0\\0&1&0&1\end{bmatrix},
+\qquad \det[B,AB]=1.
+\]
+其列向量张成空间包含 $e_3,e_4$，也包含
+$e_1=(e_1-e_3)+e_3$、$e_2=(e_2+e_4)-e_4$，所以四列线性无关。
+故 $\operatorname{rank}\mathcal C=4$，系统完全能控。
+\end{proofstep}
+
+\begin{proofstep}{(1) 求不能观子空间，判断能观性}
+能观矩阵为 $\mathcal O=[C^{\mathsf T},(CA)^{\mathsf T},\ldots,(CA^3)^{\mathsf T}]^{\mathsf T}$，其前四行是
+\[
+\begin{bmatrix}C\\CA\end{bmatrix}
+=\begin{bmatrix}1&0&0&2\\0&0&2&1\\0&0&1&2\\0&0&-2&1\end{bmatrix}.
+\]
+设初始方向 $q=(q_1,q_2,q_3,q_4)^{\mathsf T}$ 满足 $Cq=0,CAq=0$，便有
+\[
+q_1+2q_4=0,\quad 2q_3+q_4=0,\quad q_3+2q_4=0,\quad -2q_3+q_4=0.
+\]
+第二、四式相加得 $q_4=0$，进而 $q_3=0,q_1=0$，只有 $q_2$ 自由。
+所以 $\ker\bigl[\begin{smallmatrix}C\\CA\end{smallmatrix}\bigr]=\operatorname{span}\{e_2\}$。
+再由 $Ae_2=0$、$Ce_2=0$，知道继续加入 $CA^2,CA^3$ 后，这个核不会缩小。
+因此完整不能观子空间与能观秩为
+\[
+\boxed{\operatorname{rank}\mathcal C=4,\qquad \operatorname{rank}\mathcal O=3,\qquad
+\mathcal N_O=\operatorname{span}\{e_2\}.}
+\]
+系统完全能控但不完全能观。
+\end{proofstep}
+
+\begin{proofstep}{(2) 从各状态方程求传递函数矩阵}
+将矩阵方程展开：
+\[
+\dot x_1=x_3,\quad \dot x_2=x_4,\quad
+\dot x_3=-x_3+u_1,\quad \dot x_4=x_4+u_2.
+\]
+零初值下作 Laplace 变换，有 $(s+1)X_3=U_1$、$sX_1=X_3$、
+$(s-1)X_4=U_2$、$sX_2=X_4$，所以
+\[
+X_3=\frac{U_1}{s+1},\quad X_1=\frac{U_1}{s(s+1)},\qquad
+X_4=\frac{U_2}{s-1},\quad X_2=\frac{U_2}{s(s-1)}.
+\]
+由于 $Y_1=X_1+2X_4,\ Y_2=2X_3+X_4$，所以
+\[
+\boxed{G(s)=\begin{bmatrix}
+\dfrac1{s(s+1)}&\dfrac2{s-1}\\[2mm]
+\dfrac2{s+1}&\dfrac1{s-1}
+\end{bmatrix}.}
+\]
+这与 $G(s)=C(sI-A)^{-1}B$ 的定义一致，且无直接项 $D$。
+\end{proofstep}
+
+\begin{proofstep}{(3) 将不能观方向置于最后一个坐标}
+由于不能观子空间由 $e_2$ 张成，选其为最后一个基向量，再用 $e_1,e_3,e_4$ 补成全空间的基。
+明确采用变换方向
+\[
+x=Tz,\qquad T=[e_1\ e_3\ e_4\ e_2]
+=\begin{bmatrix}1&0&0&0\\0&0&0&1\\0&1&0&0\\0&0&1&0\end{bmatrix}.
+\]
+这里 $T$ 是置换矩阵，$T^{-1}=T^{\mathsf T}$，故
+$z=(x_1,x_3,x_4,x_2)^{\mathsf T}$。把原状态方程按此顺序重写为
+\[
+\dot z_1=z_2,\quad \dot z_2=-z_2+u_1,\quad
+\dot z_3=z_3+u_2,\quad \dot z_4=z_3,
+\]
+\[
+y_1=z_1+2z_3,\qquad y_2=2z_2+z_3.
+\]
+从而得到分块矩阵
+\[
+\bar A=T^{-1}AT=\left[\begin{array}{ccc|c}0&1&0&0\\0&-1&0&0\\0&0&1&0\\\hline 0&0&1&0\end{array}\right],\quad
+\bar B=T^{-1}B=\left[\begin{array}{cc}0&0\\1&0\\0&1\\\hline0&0\end{array}\right],
+\]
+\[
+\bar C=CT=\left[\begin{array}{ccc|c}1&0&2&0\\0&2&1&0\end{array}\right],\qquad \bar D=0.
+\]
+记前三维部分为 $(A_r,B_r,C_r)$。$B_r$ 的两列是三维空间的 $e_2,e_3$，而
+$A_re_2=e_1-e_2$，所以该部分能控。
+若某个三维初始向量满足 $C_rq=0,C_rA_rq=0$，由前面求核的过程可知三个分量都为零，故它也能观。
+因此前 3 个状态构成能控且能观部分。
+最后一个状态 $z_4=x_2$ 不能影响前三个状态或输出，是能控但不能观部分。
+虽然 $\bar B$ 的最后一行为零，$z_4$ 仍可通过 $u_2\to z_3\to z_4$ 间接控制，不能仅凭该行判断能控性。
+其余两个不能控部分的维数均为零。删去最后一个状态，就得到上述 $G(s)$ 的三阶最小实现。
+\end{proofstep}
+\end{solution}
+
+\begin{problem}[原题 4]
+确定下列传递函数的一个最小实现：
+\[
+\text{(1)}\quad G(s)=\frac{(s+1)(s+3)}{(s+2)(s+4)(s+6)};\qquad
+\text{(2)}\quad G(s)=\frac{5s^3+s^2+4s+1}{2s^3+4s^2+6s+3}.
+\]
+\end{problem}
+\begin{solution}
+\begin{proofstep}{说明能控标准形的构造方法}
+以下实现均采用 $\dot x=Ax+Bu,\ y=Cx+Du$，因而 $G(s)=C(sI-A)^{-1}B+D$。
+先将传函写成 $G(s)=D+r(s)/d(s)$，其中 $\deg r<\deg d$。
+对首一分母 $d(s)=s^n+a_{n-1}s^{n-1}+\cdots+a_0$，使用能控标准形
+\[
+A_c=\begin{bmatrix}0&1&&0\\ &\ddots&\ddots&\\0&&0&1\\-a_0&-a_1&\cdots&-a_{n-1}\end{bmatrix},\qquad B_c=e_n.
+\]
+若严格真分子为 $b_0+b_1s+\cdots+b_{n-1}s^{n-1}$，则取 $C_c=[b_0\ b_1\ \cdots\ b_{n-1}]$。
+为说明其来源，将状态方程展开为
+\[
+\dot x_1=x_2,\ \ldots,\ \dot x_{n-1}=x_n,\qquad
+\dot x_n=-a_0x_1-\cdots-a_{n-1}x_n+u.
+\]
+零初值下，前 $n-1$ 式给出 $X_i=s^{i-1}X_1$，代入最后一式得 $d(s)X_1=U$。
+因此
+\[
+(sI-A_c)^{-1}B_c=\frac{[1,s,\ldots,s^{n-1}]^{\mathsf T}}{d(s)},\qquad
+\frac YU=\frac{b_0+b_1s+\cdots+b_{n-1}s^{n-1}}{d(s)}+D.
+\]
+这就解释了 $A_c$ 的最后一行和 $C_c$ 各元素应如何从多项式系数读取。
+\end{proofstep}
+
+\begin{proofstep}{(1) 构造三阶实现并证明最小性}
+展开得
+\[
+d(s)=(s+2)(s+4)(s+6)=s^3+12s^2+44s+48,\qquad r(s)=s^2+4s+3.
+\]
+本式严格真，所以 $D=0$。
+因此可取
+\[
+\boxed{A=\begin{bmatrix}0&1&0\\0&0&1\\-48&-44&-12\end{bmatrix},\quad
+B=\begin{bmatrix}0\\0\\1\end{bmatrix},\quad
+C=\begin{bmatrix}3&4&1\end{bmatrix},\quad D=0.}
+\]
+按第一步已经推导的预解式，具体有
+\[
+C(sI-A)^{-1}B
+=\frac{[3\ 4\ 1][1\ s\ s^2]^{\mathsf T}}{s^3+12s^2+44s+48}
+=\frac{(s+1)(s+3)}{(s+2)(s+4)(s+6)}.
+\]
+分子根 $-1,-3$ 与分母根 $-2,-4,-6$ 不同，约分后分母仍为三次，所以任何实现至少需要 3 个状态。
+本实现正好三阶，因而最小。这里使用的下界来自
+$(sI-A)^{-1}=\operatorname{adj}(sI-A)/\det(sI-A)$：
+$n$ 阶实现的传函约分后，其分母次数不可能超过 $\deg\det(sI-A)=n$。
+\end{proofstep}
+
+\begin{proofstep}{(2) 分离直接项，构造动态部分}
+分子、分母同次，不能把整个分子直接填入 $C$，必须先分离直接项：
+\[
+D=\lim_{s\to\infty}G(s)=\frac52,
+\qquad
+G(s)-\frac52=\frac{-\frac92s^2-\frac{11}{2}s-\frac{13}{4}}
+{s^3+2s^2+3s+\frac32}.
+\]
+其计算过程为
+\[
+\begin{aligned}
+&5s^3+s^2+4s+1-\frac52(2s^3+4s^2+6s+3)\\
+&\hspace{2em}=-9s^2-11s-\frac{13}{2}.
+\end{aligned}
+\]
+再将动态部分的分子、分母同时除以 2，使分母首一，就得到上式。
+所以可取
+\[
+\boxed{A=\begin{bmatrix}0&1&0\\0&0&1\\-\frac32&-3&-2\end{bmatrix},\quad
+B=\begin{bmatrix}0\\0\\1\end{bmatrix},\quad
+C=\begin{bmatrix}-\frac{13}{4}&-\frac{11}{2}&-\frac92\end{bmatrix},\quad D=\frac52.}
+\]
+传函核验为
+\[
+C(sI-A)^{-1}B+D
+=\frac{-\frac{13}{4}-\frac{11}{2}s-\frac92s^2}{s^3+2s^2+3s+\frac32}+\frac52
+=\frac{5s^3+s^2+4s+1}{2s^3+4s^2+6s+3}.
+\]
+\end{proofstep}
+
+\pagebreak
+\begin{proofstep}{(2) 用能控、能观秩证明最小性}
+为排除潜在的极零消去，计算能控矩阵和能观矩阵：
+\[
+\mathcal C=[B,AB,A^2B]
+=\begin{bmatrix}0&0&1\\0&1&-2\\1&-2&1\end{bmatrix},\qquad
+\mathcal O=\begin{bmatrix}C\\CA\\CA^2\end{bmatrix}
+=\frac14\begin{bmatrix}-13&-22&-18\\27&41&14\\-21&-15&13\end{bmatrix}.
+\]
+第一矩阵沿首行展开，行列式为 $-1$。第二矩阵的整数部分行列式为
+\[
+\begin{aligned}
+&-13(41\cdot13+14\cdot15)
++22(27\cdot13+14\cdot21)\\
+&\hspace{3em}-18(-27\cdot15+41\cdot21)=-3677.
+\end{aligned}
+\]
+所以
+\[
+\det\mathcal C=-1\ne0,\qquad \det\mathcal O=-\frac{3677}{64}\ne0,
+\]
+因此该三阶实现完全能控、完全能观，确为最小实现。直接项 $D$ 不增加动态状态阶数。
+\end{proofstep}
+\end{solution}
+
+\begin{problem}[原题 5]
+已知
+\[
+\text{(a)}\quad G_a(s)=\frac{3s^2+17s+25}{(s+2)^3(s+3)},\qquad
+\text{(b)}\quad G_b(s)=\frac{s^2+8s+15}{s^3+7s^2+14s+8}.
+\]
+分别求：(1) 能控形实现；(2) 能观形实现；(3) 若尔当标准型实现；(4) 最小实现。
+\end{problem}
+\begin{solution}
+各组矩阵均表示 $\dot x=Ax+Bu,\ y=Cx+Du$。
+这两个传递函数均严格真，故以下各实现均取 $D=\lim_{s\to\infty}G(s)=0$。
+对能控标准形 $(A_c,B_c,C_c)$，其对偶 $(A_c^{\mathsf T},C_c^{\mathsf T},B_c^{\mathsf T})$
+给出同一个标量传递函数的能观标准形。这并不是只将状态变量重新排列，而是利用下面的对偶恒等式：
+\[
+B_c^{\mathsf T}(sI-A_c^{\mathsf T})^{-1}C_c^{\mathsf T}
+=\bigl[C_c(sI-A_c)^{-1}B_c\bigr]^{\mathsf T}=G(s).
+\]
+最后一个等号利用了 $G(s)$ 是标量。相应的能观矩阵为能控矩阵的转置，因此具有满秩性。
+
+\begin{proofstep}{(a)(1) 根据分母、分子系数构造能控形}
+分母展开为
+\[
+(s+2)^3(s+3)=s^4+9s^3+30s^2+44s+24.
+\]
+记它为 $d_a(s)$。选取四个状态使
+$\dot x_1=x_2,\dot x_2=x_3,\dot x_3=x_4$，
+并令 $\dot x_4=-24x_1-44x_2-30x_3-9x_4+u$，
+则零初值下 $d_a(s)X_1=U$。
+输出应满足 $Y=(25+17s+3s^2)X_1$，所以取 $y=25x_1+17x_2+3x_3$。得到
+\[
+A_c=\begin{bmatrix}0&1&0&0\\0&0&1&0\\0&0&0&1\\-24&-44&-30&-9\end{bmatrix},\quad
+B_c=\begin{bmatrix}0\\0\\0\\1\end{bmatrix},\quad
+C_c=\begin{bmatrix}25&17&3&0\end{bmatrix},\quad D_c=0.
+\]
+具体核验为
+\[
+C_c(sI-A_c)^{-1}B_c
+=\frac{[25\ 17\ 3\ 0][1\ s\ s^2\ s^3]^{\mathsf T}}{d_a(s)}
+=G_a(s).
+\]
+\end{proofstep}
+
+\begin{proofstep}{(a)(2) 由对偶关系构造能观形}
+取 $A_o=A_c^{\mathsf T},B_o=C_c^{\mathsf T},C_o=B_c^{\mathsf T}$，即
+\[
+A_o=\begin{bmatrix}0&0&0&-24\\1&0&0&-44\\0&1&0&-30\\0&0&1&-9\end{bmatrix},\quad
+B_o=\begin{bmatrix}25\\17\\3\\0\end{bmatrix},\quad
+C_o=\begin{bmatrix}0&0&0&1\end{bmatrix},\quad D_o=0.
+\]
+由解答开头的转置恒等式可知 $C_o(sI-A_o)^{-1}B_o=G_a(s)$。
+进一步，
+\[
+\mathcal O_o=\begin{bmatrix}C_o\\C_oA_o\\C_oA_o^2\\C_oA_o^3\end{bmatrix}
+=\bigl[B_c\ A_cB_c\ A_c^2B_c\ A_c^3B_c\bigr]^{\mathsf T}
+=\mathcal C_c^{\mathsf T}.
+\]
+能控标准形的 $\det\mathcal C_c=1$，所以此对偶实现确实完全能观。
+\end{proofstep}
+
+\begin{proofstep}{(a)(3) 求重复极点的部分分式系数}
+因为 $-2$ 是三重极点、$-3$ 是单极点，先设
+\[
+G_a(s)=\frac{a_1}{s+2}+\frac{a_2}{(s+2)^2}
++\frac{a_3}{(s+2)^3}+\frac{b}{s+3}.
+\]
+令 $r=s+2$，则分子变成 $3r^2+5r+3$、分母为 $r^3(r+1)$。
+两边乘以分母，得到多项式恒等式
+\[
+3r^2+5r+3=a_1r^2(r+1)+a_2r(r+1)+a_3(r+1)+br^3.
+\]
+比较常数、一次、二次、三次项的系数，依次得到
+\[
+a_3=3,\quad a_2+a_3=5,\quad a_1+a_2=3,\quad a_1+b=0.
+\]
+于是 $a_3=3,a_2=2,a_1=1,b=-1$，即
+\[
+G_a(s)=\frac1{s+2}+\frac2{(s+2)^2}+\frac3{(s+2)^3}-\frac1{s+3}.
+\]
+一个大小为 3 的若尔当块可以同时产生 $(s+2)^{-1},(s+2)^{-2},(s+2)^{-3}$。
+令 $J_3(-2)=-2I+N$，其中 $N$ 的超对角元为 1，$N^3=0$，则有限几何级数给出
+\[
+(sI-J_3(-2))^{-1}
+=\frac{I}{s+2}+\frac{N}{(s+2)^2}+\frac{N^2}{(s+2)^3}.
+\]
+由于 $Ne_3=e_2,N^2e_3=e_1$，所以
+\[
+(sI-J_3(-2))^{-1}e_3=
+\begin{bmatrix}(s+2)^{-3}\\(s+2)^{-2}\\(s+2)^{-1}\end{bmatrix}.
+\]
+为产生上述三个分式，令输入作用于若尔当链末端，输出系数依次取 $a_3,a_2,a_1$。
+再用一个一维状态实现 $-1/(s+3)$，便得到
+\[
+A_J=\begin{bmatrix}-2&1&0&0\\0&-2&1&0\\0&0&-2&0\\0&0&0&-3\end{bmatrix},\quad
+B_J=\begin{bmatrix}0\\0\\1\\1\end{bmatrix},\quad
+C_J=\begin{bmatrix}3&2&1&-1\end{bmatrix},\quad D_J=0.
+\]
+具体地，前三个状态产生 $3/(s+2)^3+2/(s+2)^2+1/(s+2)$，
+第四个状态产生 $-1/(s+3)$；相加正好还原 $G_a(s)$。
+
+还可以显式联系前面的能控形与本若尔当形。记
+$\mathcal C_J=[B_J,A_JB_J,A_J^2B_J,A_J^3B_J]$，在变换 $x_c=T_Jz$ 下必须有
+$\mathcal C_c=T_J\mathcal C_J$，因此可由 $T_J=\mathcal C_c\mathcal C_J^{-1}$ 求得
+\[
+T_J=\begin{bmatrix}
+1&-1&1&-1\\-2&3&-3&3\\4&-8&9&-9\\-8&20&-26&27
+\end{bmatrix},\qquad \det T_J=1.
+\]
+代入可核对 $A_cT_J=T_JA_J$、$B_c=T_JB_J$、$C_cT_J=C_J$，
+所以这确实是同一系统在另一组状态坐标下的表示。
+\end{proofstep}
+
+\begin{proofstep}{(a)(4) 用不可消去的极点及重数确定最小阶数}
+设分子为 $n_a(s)=3s^2+17s+25$，则
+\[
+n_a(-2)=12-34+25=3,\qquad n_a(-3)=27-51+25=1.
+\]
+均非零，所以分母没有可消去因子；约分后的分母仍包含三重极点 $-2$ 和单极点 $-3$。
+任何 $n$ 维实现的传函分母都来自 $\det(sI-A)$，约分后分母次数至多为 $n$，
+因此本题至少需要 $3+1=4$ 个状态。
+上述三种四阶实现都是最小实现，任选一个即可。
+例如可将第 (a)(1) 问的 $(A_c,B_c,C_c,0)$ 直接作为最终最小实现。
+\end{proofstep}
+
+\pagebreak
+\begin{proofstep}{(b)(1) 构造三阶能控标准形}
+分母已经首一，按常数项到二次项的顺序有 $a_0=8,a_1=14,a_2=7$；
+分子的系数为 $b_0=15,b_1=8,b_2=1$。
+因此取 $\dot x_1=x_2,\dot x_2=x_3,\dot x_3=-8x_1-14x_2-7x_3+u$，
+并令 $y=15x_1+8x_2+x_3$，得到
+\[
+A_c=\begin{bmatrix}0&1&0\\0&0&1\\-8&-14&-7\end{bmatrix},\quad
+B_c=\begin{bmatrix}0\\0\\1\end{bmatrix},\quad
+C_c=\begin{bmatrix}15&8&1\end{bmatrix},\quad D_c=0.
+\]
+其传函为 $(15+8s+s^2)/(8+14s+7s^2+s^3)=G_b(s)$。
+\end{proofstep}
+
+\begin{proofstep}{(b)(2) 构造能观标准形}
+将 $A_c$ 转置，同时交换 $B_c,C_c$ 并转置，取
+\[
+A_o=\begin{bmatrix}0&0&-8\\1&0&-14\\0&1&-7\end{bmatrix},\quad
+B_o=\begin{bmatrix}15\\8\\1\end{bmatrix},\quad
+C_o=\begin{bmatrix}0&0&1\end{bmatrix},\quad D_o=0.
+\]
+这同样是能控形的对偶，因此实现同一个 $G_b(s)$。
+其能观矩阵满足 $\mathcal O_o=\mathcal C_c^{\mathsf T}$，
+其中三阶能控标准形有 $\det\mathcal C_c=-1\ne0$，故该实现完全能观。
+\end{proofstep}
+
+\begin{proofstep}{(b)(3) 求单极点的留数并构造若尔当形}
+因为
+\[
+s^3+7s^2+14s+8=(s+1)(s+2)(s+4),
+\]
+三个极点互不相同，设 $G_b(s)=r_1/(s+1)+r_2/(s+2)+r_4/(s+4)$。
+每个系数可以乘去相应的一次因子，再代入极点求得：
+\begin{align*}
+r_1&=\left.\frac{s^2+8s+15}{(s+2)(s+4)}\right|_{s=-1}
+=\frac{1-8+15}{1\cdot3}=\frac83,\\
+r_2&=\left.\frac{s^2+8s+15}{(s+1)(s+4)}\right|_{s=-2}
+=\frac{4-16+15}{(-1)\cdot2}=-\frac32,\\
+r_4&=\left.\frac{s^2+8s+15}{(s+1)(s+2)}\right|_{s=-4}
+=\frac{16-32+15}{(-3)(-2)}=-\frac16.
+\end{align*}
+所以部分分式展开为
+\[
+G_b(s)=\frac{8/3}{s+1}-\frac{3/2}{s+2}-\frac{1/6}{s+4}.
+\]
+给每个一阶分式配一个状态 $\dot z_i=\lambda_i z_i+u$，再用留数作为输出权重，便得到
+\[
+A_J=\operatorname{diag}(-1,-2,-4),\quad
+B_J=\begin{bmatrix}1\\1\\1\end{bmatrix},\quad
+C_J=\begin{bmatrix}\frac83&-\frac32&-\frac16\end{bmatrix},\quad D_J=0.
+\]
+零初值下 $Z_i=U/(s-\lambda_i)$，故输出 $y=(8/3)z_1-(3/2)z_2-(1/6)z_3$
+恰好产生上述三个分式之和。
+三个特征值互异，所以若尔当形在此就是对角形。
+
+对应于能控形的一个显式状态变换 $x_c=T_Jz$ 为
+\[
+T_J=\begin{bmatrix}
+\frac13&-\frac12&\frac16\\[1mm]
+-\frac13&1&-\frac23\\[1mm]
+\frac13&-2&\frac83
+\end{bmatrix},\qquad \det T_J=\frac16\ne0.
+\]
+其三列分别与特征向量 $[1,-1,1]^{\mathsf T}$、$[1,-2,4]^{\mathsf T}$、$[1,-4,16]^{\mathsf T}$ 成比例；
+比例系数使 $T_J[1,1,1]^{\mathsf T}=B_c$。
+因此 $A_cT_J=T_JA_J$、$B_c=T_JB_J$，且计算 $C_cT_J$ 恰为 $C_J$。
+\end{proofstep}
+
+\begin{proofstep}{(b)(4) 判定最小阶数并给出最小实现}
+分子分解为 $s^2+8s+15=(s+3)(s+5)$，
+与分母 $(s+1)(s+2)(s+4)$ 没有公共因子。因此三个单极点均不能约去，实现阶数至少为 3。
+上述三个实现都是三阶，均达到这个下界，故都最小。
+例如可取第 (b)(3) 问的对角实现 $(A_J,B_J,C_J,0)$ 作为最小实现；
+三个输入系数均为 1、三个输出留数均非零，也表明每个单极点模态都能控且能观。
+\end{proofstep}
+\end{solution}
+
+\begin{problem}[原题 6(4)]
+确定传递函数矩阵
+\[
+G(s)=\begin{bmatrix}\dfrac1{s+1}&\dfrac1{s^2+2s+2}\end{bmatrix}
+\]
+的一个最小实现。
+\end{problem}
+\begin{solution}
+\begin{proofstep}{分别选择两个通道的状态变量}
+该矩阵为一行两列，表示两个输入 $u_1,u_2$ 和一个输出 $y$。
+第一通道 $1/(s+1)$ 可用一个状态实现，令 $\dot x_1+x_1=u_1$。
+第二通道 $1/(s^2+2s+2)$ 可先写成二阶方程
+$\ddot w+2\dot w+2w=u_2$，再取 $x_2=w,x_3=\dot w$。
+将两个通道的输出相加，就得到
+\[
+\begin{aligned}
+\dot x_1&=-x_1+u_1,\\
+\dot x_2&=x_3,\\
+\dot x_3&=-2x_2-2x_3+u_2,\\
+y&=x_1+x_2.
+\end{aligned}
+\]
+于是
+\[
+\boxed{A=\begin{bmatrix}-1&0&0\\0&0&1\\0&-2&-2\end{bmatrix},\quad
+B=\begin{bmatrix}1&0\\0&0\\0&1\end{bmatrix},\quad
+C=\begin{bmatrix}1&1&0\end{bmatrix},\quad D=\begin{bmatrix}0&0\end{bmatrix}.}
+\]
+这里矩阵对应 $\dot x=Ax+Bu,\ y=Cx+Du$；由于两个通道均严格真，直接项为零。
+\end{proofstep}
+
+\begin{proofstep}{核对两路输入到输出的传递函数}
+零初值下由第一式得 $(s+1)X_1=U_1$；由第二、三式得
+\[
+sX_2=X_3,\qquad sX_3=-2X_2-2X_3+U_2.
+\]
+消去 $X_3$ 后，$(s^2+2s+2)X_2=U_2$。再用 $Y=X_1+X_2$，得到
+\[
+Y=\frac{1}{s+1}U_1+\frac{1}{s^2+2s+2}U_2,
+\]
+恰好还原题设的传递函数矩阵。
+\end{proofstep}
+
+\begin{proofstep}{用极点下界及秩条件检验最小性}
+因为 $(sI-A)^{-1}$ 的公共分母为 $\det(sI-A)$，
+任意实现的特征多项式必须含有各通道中没有约去的全部极点。
+这里 $-1$、$-1+j$、$-1-j$ 三个极点互不相同且均未约去，因而实现阶数至少为 3。
+给出的实现为三阶，因此最小。
+还可独立检验：$B$ 的两列为 $e_1,e_3$，而 $Ae_3=e_2-2e_3$，所以能控子空间包含全部三个标准基向量。
+另一方面
+\[
+\mathcal O=\begin{bmatrix}C\\CA\\CA^2\end{bmatrix}
+=\begin{bmatrix}1&1&0\\-1&0&1\\1&-2&-2\end{bmatrix},\qquad
+\det\mathcal O=1\ne0.
+\]
+故这个实现也同时通过完全能控、完全能观的最小性判据。
+\end{proofstep}
+\end{solution}
+
+\begin{problem}[原题 6(7)]
+确定传递函数矩阵
+\[
+G(s)=\begin{bmatrix}\dfrac1{s(s+1)}&\dfrac2{s+2}\\[2mm]
+\dfrac2{s+1}&\dfrac1{s+1}\end{bmatrix}
+\]
+的一个最小实现。
+\end{problem}
+\begin{solution}
+\begin{proofstep}{计算各简单极点的留数矩阵}
+本题有两个输入、两个输出，采用 $\dot x=Ax+Bu,\ y=Cx+Du$。
+首先对左上角元素作分解 $1/[s(s+1)]=1/s-1/(s+1)$，
+再将各元素按共同极点 $0,-1,-2$ 整理，得到
+\[
+G(s)=\frac{R_0}{s}+\frac{R_{-1}}{s+1}+\frac{R_{-2}}{s+2},
+\]
+其中留数矩阵可以逐项用 $R_\lambda=\lim_{s\to\lambda}(s-\lambda)G(s)$ 计算：
+\[
+R_0=\begin{bmatrix}1&0\\0&0\end{bmatrix},\quad
+R_{-1}=\begin{bmatrix}-1&0\\2&1\end{bmatrix},\quad
+R_{-2}=\begin{bmatrix}0&2\\0&0\end{bmatrix}.
+\]
+各留数矩阵的秩依次为 $1,2,1$。
+具体地，$R_0,R_{-2}$ 均只有一个非零行，而 $\det R_{-1}=-1\ne0$。
+\end{proofstep}
+
+\begin{proofstep}{说明最少需要多少状态}
+对任意实现，设 $P_\lambda$ 为状态矩阵在特征值 $\lambda$ 处的谱投影，
+其像空间是该特征值的广义特征子空间。预解式在 $(s-\lambda)^{-1}$ 项的系数为 $P_\lambda$，
+所以传函留数满足 $R_\lambda=CP_\lambda B$，进而
+\[
+\operatorname{rank}R_\lambda\le\operatorname{rank}P_\lambda.
+\]
+不同特征值的广义特征子空间互相直和，其维数之和不超过总状态维数。
+因此任何实现都必须满足
+\[
+n\ge\operatorname{rank}R_0+\operatorname{rank}R_{-1}+\operatorname{rank}R_{-2}=1+2+1=4.
+\]
+特别是，虽然传函只有三个不同极点，但 $-1$ 处的留数满秩，必须安排两个状态来承载该极点。
+\end{proofstep}
+
+\begin{proofstep}{将留数作满秩分解并组装四阶实现}
+选取满秩分解 $R_\lambda=E_\lambda F_\lambda$：
+\[
+\begin{aligned}
+E_0&=\begin{bmatrix}1\\0\end{bmatrix},&F_0&=\begin{bmatrix}1&0\end{bmatrix},\\
+E_{-1}&=\begin{bmatrix}-1&0\\2&1\end{bmatrix},&F_{-1}&=I_2,\\
+E_{-2}&=\begin{bmatrix}2\\0\end{bmatrix},&F_{-2}&=\begin{bmatrix}0&1\end{bmatrix}.
+\end{aligned}
+\]
+对每个极点引入 $r_\lambda=\operatorname{rank}R_\lambda$ 维状态，令
+\[
+\dot z_\lambda=\lambda z_\lambda+F_\lambda u,\qquad y_\lambda=E_\lambda z_\lambda.
+\]
+该子系统的传函正好为 $E_\lambda F_\lambda/(s-\lambda)=R_\lambda/(s-\lambda)$。
+按 $0,-1,-2$ 的顺序排列三个子系统的状态，并把输出相加，便得到
+\[
+\boxed{A=\operatorname{diag}(0,-1,-1,-2),\quad
+B=\begin{bmatrix}1&0\\1&0\\0&1\\0&1\end{bmatrix},\quad
+C=\begin{bmatrix}1&-1&0&2\\0&2&1&0\end{bmatrix},\quad D=0_{2\times2}.}
+\]
+这里 $B$ 是各 $F_\lambda$ 纵向堆叠，$C$ 是各 $E_\lambda$ 横向拼接，$D=0$ 来自严格真性。
+因此
+\[
+C(sI-A)^{-1}B
+=\begin{bmatrix}\frac1s-\frac1{s+1}&\frac2{s+2}\\[1mm]
+\frac2{s+1}&\frac1{s+1}\end{bmatrix}=G(s).
+\]
+这个实现正好四阶，达到上述下界，故
+\[
+\boxed{n_{\min}=4.}
+\]
+还可用 PBH 判据核对：对特征值 $-1$，相应 $B$ 的两行为 $I_2$，而相应 $C$ 的两列为
+$\bigl[\begin{smallmatrix}-1&0\\2&1\end{smallmatrix}\bigr]$，均满秩；
+对特征值 $0,-2$，相应的输入行、输出列均非零。因此所有模态都能控且能观，确为最小实现。
+\end{proofstep}
+\end{solution}
+
+\begin{problem}[原题 10]
+给定 $G(s)=100/[s(s+5)]$。
+(1) 求一个最小状态空间实现；(2) 用状态反馈将闭环极点配置为 $-20\pm20j$。
+\end{problem}
+\begin{solution}
+\begin{proofstep}{(1) 从微分方程构造状态空间实现}
+由 $s(s+5)Y=100U$，零初值下对应微分方程 $\ddot y+5\dot y=100u$。
+选 $x_1=y/100,x_2=\dot y/100$，则
+\[
+\dot x_1=x_2,\qquad \dot x_2=-5x_2+u,\qquad y=100x_1.
+\]
+所以在 $\dot x=Ax+Bu,\ y=Cx+Du$ 的约定下，一个能控标准形实现为
+\[
+\boxed{A=\begin{bmatrix}0&1\\0&-5\end{bmatrix},\quad
+B=\begin{bmatrix}0\\1\end{bmatrix},\quad C=\begin{bmatrix}100&0\end{bmatrix},\quad D=0.}
+\]
+零初值下 $sX_1=X_2$、$(s+5)X_2=U$，故
+$Y/U=100X_1/U=100/[s(s+5)]$，与题设一致。
+\end{proofstep}
+
+\begin{proofstep}{(1) 检验能控性、能观性及最小性}
+先算 $AB=[1,-5]^{\mathsf T}$、$CA=[0,100]$，便得到
+\[
+\mathcal C=[B,AB]=\begin{bmatrix}0&1\\1&-5\end{bmatrix},\qquad
+\mathcal O=\begin{bmatrix}C\\CA\end{bmatrix}=\begin{bmatrix}100&0\\0&100\end{bmatrix},
+\]
+两者的行列式分别为 $-1$ 与 $10000$，故该二阶实现完全能控且完全能观，因而最小。
+也可从 $G(s)$ 的两个未约去极点 $0,-5$ 看出，任何实现至少需要两个状态。
+\end{proofstep}
+
+\begin{proofstep}{(2) 推导闭环特征多项式}
+令 $u=Kx+v$、$K=[k_1\ k_2]$。代入状态方程可得
+$\dot x_2=k_1x_1+(-5+k_2)x_2+v$，所以
+\[
+A+BK=\begin{bmatrix}0&1\\k_1&-5+k_2\end{bmatrix},\qquad
+\det(sI-A-BK)=s^2+(5-k_2)s-k_1.
+\]
+其中行列式展开为
+\[
+\begin{vmatrix}s&-1\\-k_1&s+5-k_2\end{vmatrix}
+=s(s+5-k_2)-(-1)(-k_1)
+=s^2+(5-k_2)s-k_1.
+\]
+\end{proofstep}
+
+\begin{proofstep}{(2) 匹配目标多项式并核验反馈结果}
+期望多项式为
+\[
+(s+20-20j)(s+20+20j)=s^2+40s+800.
+\]
+两个二次多项式均为首一形式，要使根及重数一致，令一次项和常数项系数分别相同：
+$5-k_2=40,-k_1=800$，从而
+\[
+\boxed{K=\begin{bmatrix}-800&-35\end{bmatrix}.}
+\]
+闭环矩阵为 $\bigl[\begin{smallmatrix}0&1\\-800&-40\end{smallmatrix}\bigr]$，其极点确为 $-20\pm20j$。
+闭环从 $v$ 到 $y$ 的传递函数为 $100/(s^2+40s+800)$，与该极点计算一致。
+\end{proofstep}
+\end{solution}
+\end{document}

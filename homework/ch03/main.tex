@@ -1,0 +1,362 @@
+\documentclass[11pt]{article}
+\newcommand{\HomeworkHeader}{习题三}
+\input{../_shared/preamble.tex}
+\begin{document}
+\makeCustomTitle{习题三}
+% 红框选题及来源：原题 1（题面 PDF 第 1 页）、6（第 2 页）、10、12、13（第 3 页）。
+
+\begin{problem}[原题 1]
+设 $X_C[A,B]$ 为系统 $(A,B)$ 的能控子空间，证明
+\[
+X_C[A,B]=X_C[A+BK,B].
+\]
+\end{problem}
+\begin{solution}
+\begin{proofstep}{写出能控子空间并说明其不变性}
+对 $n$ 维系统，能控子空间为
+\[
+\mathcal R=\operatorname{im}[B,AB,\ldots,A^{n-1}B].
+\]
+也就是说，$\mathcal R$ 中的向量都是 $B,AB,\ldots,A^{n-1}B$ 各列的线性组合。
+将这些生成向量左乘 $A$，除 $A^nB$ 外，所得向量仍是上述矩阵的列。
+若 $A$ 的特征多项式为 $p(s)=s^n+a_{n-1}s^{n-1}+\cdots+a_0$，
+则 Cayley--Hamilton 定理给出
+\[
+A^nB=-a_{n-1}A^{n-1}B-\cdots-a_1AB-a_0B.
+\]
+所以 $A^nB$ 的列也在 $\mathcal R$ 中，因而
+$A\mathcal R\subseteq\mathcal R$，且 $\operatorname{im}B\subseteq\mathcal R$。
+\end{proofstep}
+
+\begin{proofstep}{证明反馈后的能控子空间包含于原子空间}
+采用 $u=Kx+v$，闭环状态矩阵记为 $A_f=A+BK$。
+因此对任意 $w\in\mathcal R$，
+\[
+(A+BK)w=Aw+B(Kw)\in\mathcal R.
+\]
+这里 $Aw\in\mathcal R$ 来自第一步的不变性，而 $B(Kw)\in\operatorname{im}B\subseteq\mathcal R$。
+所以 $\mathcal R$ 也是 $A_f$ 不变子空间。
+以 $\operatorname{im}B\subseteq\mathcal R$ 为起点，反复左乘 $A_f$，得到
+\[
+\operatorname{im}(A_fB),\ \operatorname{im}(A_f^2B),\ \ldots,
+\operatorname{im}(A_f^{n-1}B)\subseteq\mathcal R.
+\]
+这些子空间的和正是反馈后的能控子空间，因此
+\[
+X_C[A+BK,B]\subseteq X_C[A,B].
+\]
+\end{proofstep}
+
+\pagebreak
+\begin{proofstep}{交换两个系统，证明反向包含}
+反过来，令 $A_f=A+BK$，则 $A=A_f+B(-K)$。
+对 $(A_f,B)$ 应用完全相同的论证，得到
+$X_C[A,B]\subseteq X_C[A_f,B]$。于是
+\[
+\boxed{X_C[A,B]=X_C[A+BK,B].}
+\]
+这个结论说明状态反馈保持整个能控子空间，因此也保持能控性及能控子空间的维数。
+\end{proofstep}
+\end{solution}
+
+\begin{problem}[原题 6]
+给定开环系统 $(A,b)$，其中
+\[
+A=\begin{bmatrix}0&1&0&0\\3&0&0&2\\0&0&0&1\\0&-2&0&0\end{bmatrix},\qquad
+b=\begin{bmatrix}0\\0\\0\\1\end{bmatrix}.
+\]
+(1) 证明系统完全能控；(2) 求反馈矩阵 $K$，使闭环特征根为 $-1,-1,-2\pm j$。
+\end{problem}
+\begin{solution}
+\begin{proofstep}{(1) 计算能控矩阵并检验满秩}
+从输入向量出发，逐次左乘 $A$：
+\[
+Ab=\begin{bmatrix}0\\2\\1\\0\end{bmatrix},\qquad
+A^2b=\begin{bmatrix}2\\0\\0\\-4\end{bmatrix},\qquad
+A^3b=\begin{bmatrix}0\\-2\\-4\\0\end{bmatrix}.
+\]
+因此能控矩阵为
+\[
+\mathcal C=[b,Ab,A^2b,A^3b]
+=\begin{bmatrix}
+0&0&2&0\\0&2&0&-2\\0&1&0&-4\\1&0&-4&0
+\end{bmatrix}.
+\]
+沿第一行的非零元素展开，再沿所得三阶行列式的第一列展开，有
+\[
+\det\mathcal C
+=2\begin{vmatrix}0&2&-2\\0&1&-4\\1&0&0\end{vmatrix}
+=2\begin{vmatrix}2&-2\\1&-4\end{vmatrix}
+=2(-8+2)=-12\ne0.
+\]
+因此 $\operatorname{rank}\mathcal C=4$，系统完全能控，任意四个闭环极点均可配置。
+\end{proofstep}
+
+\pagebreak
+\begin{proofstep}{(2) 写出闭环矩阵及其特征多项式}
+取反馈律 $u=Kx+v$，故 $\dot x=(A+bK)x+bv$。
+设 $K=[k_1\ k_2\ k_3\ k_4]$，因为 $b=e_4$，$bK$ 只改变 $A$ 的最后一行：
+\[
+A+bK=\begin{bmatrix}
+0&1&0&0\\3&0&0&2\\0&0&0&1\\k_1&k_2-2&k_3&k_4
+\end{bmatrix}.
+\]
+为配置极点，需要使 $\det(sI-A-bK)$ 等于目标特征多项式。具体展开为
+\[
+p_K(s)=\begin{vmatrix}
+s&-1&0&0\\-3&s&0&-2\\0&0&s&-1\\-k_1&2-k_2&-k_3&s-k_4
+\end{vmatrix}.
+\]
+沿第三列展开，再计算两个三阶行列式，得到
+\begin{align*}
+p_K(s)
+&=s\begin{vmatrix}s&-1&0\\-3&s&-2\\-k_1&2-k_2&s-k_4\end{vmatrix}
++k_3\begin{vmatrix}s&-1&0\\-3&s&-2\\0&0&-1\end{vmatrix}\\
+&=s\bigl[(s^2-3)(s-k_4)+2s(2-k_2)-2k_1\bigr]-k_3(s^2-3).
+\end{align*}
+按 $s$ 的幂次整理，得
+\[
+p_K(s)
+=s^4-k_4s^3+(1-2k_2-k_3)s^2+(-2k_1+3k_4)s+3k_3.
+\]
+\end{proofstep}
+
+\begin{proofstep}{匹配系数，求出并检验反馈增益}
+期望特征多项式为
+\[
+p_d(s)=(s+1)^2\bigl((s+2)^2+1\bigr)
+=s^4+6s^3+14s^2+14s+5.
+\]
+二者都是首一四次多项式；其根及重数相同，当且仅当各次幂的系数分别相同。因此要求
+\[
+-k_4=6,\quad 1-2k_2-k_3=14,\quad -2k_1+3k_4=14,\quad 3k_3=5.
+\]
+先由三次项和常数项得到 $k_4=-6,k_3=5/3$，再由二次项得到 $k_2=-22/3$，
+最后由一次项得到 $k_1=(3k_4-14)/2=-16$。故
+\[
+\boxed{K=\begin{bmatrix}-16&-\dfrac{22}{3}&\dfrac53&-6\end{bmatrix}.}
+\]
+代回闭环特征多项式，恰为 $(s+1)^2(s^2+4s+5)$，因此包括二重根 $-1$ 在内的全部极点满足要求。
+\end{proofstep}
+\end{solution}
+
+\begin{problem}[原题 10]
+给定
+\[
+A=\begin{bmatrix}0&1&0&0\\0&0&1&0\\0&0&1&0\\0&0&0&1\end{bmatrix},\qquad
+B=\begin{bmatrix}0&0\\0&0\\1&0\\0&1\end{bmatrix}.
+\]
+求状态反馈矩阵 $K$，使闭环特征根为 $-2,-2,-1\pm j$。
+\end{problem}
+\begin{solution}
+\begin{proofstep}{利用系统结构分配两路输入的任务}
+采用 $u=Kx+v$。由题设矩阵可将原系统写成
+\[
+\dot x_1=x_2,\quad \dot x_2=x_3,\quad
+\dot x_3=x_3+u_1,\quad \dot x_4=x_4+u_2.
+\]
+系统的前三个状态由第一个输入控制，第四个状态由第二个输入控制。
+故可分别配置两个子系统的极点，取
+\[
+K=\begin{bmatrix}k_1&k_2&k_3&0\\0&0&0&k_4\end{bmatrix}.
+\]
+第一行只使用前三个状态，第二行只使用第四个状态，因而闭环仍为 $3+1$ 维块对角结构。
+\end{proofstep}
+
+\begin{proofstep}{配置前三维子系统的三个极点}
+将一个 $-2$ 和 $-1\pm j$ 分配给前三维子系统，其期望多项式为
+\[
+(s+2)\bigl((s+1)^2+1\bigr)=s^3+4s^2+6s+4.
+\]
+该子系统闭环矩阵为
+\[
+A_{f,1}=\begin{bmatrix}0&1&0\\0&0&1\\k_1&k_2&1+k_3\end{bmatrix}.
+\]
+沿特征行列式第一行展开，可得
+\begin{align*}
+\det(sI-A_{f,1})
+&=\begin{vmatrix}s&-1&0\\0&s&-1\\-k_1&-k_2&s-1-k_3\end{vmatrix}\\
+&=s\bigl[s(s-1-k_3)-k_2\bigr]-k_1\\
+&=s^3-(1+k_3)s^2-k_2s-k_1.
+\end{align*}
+将它与目标首一多项式比较，得到
+\[
+-(1+k_3)=4,\qquad -k_2=6,\qquad -k_1=4,
+\]
+即 $k_1=-4,k_2=-6,k_3=-5$。
+\end{proofstep}
+
+\begin{proofstep}{配置第四个极点并合并结果}
+第四个状态满足
+$\dot x_4=(1+k_4)x_4+v_2$，取 $k_4=-3$ 即可使其极点为 $-2$。
+于是一个可行解是
+\[
+\boxed{K=\begin{bmatrix}-4&-6&-5&0\\0&0&0&-3\end{bmatrix}.}
+\]
+此时
+\[
+A+BK=\begin{bmatrix}0&1&0&0\\0&0&1&0\\-4&-6&-4&0\\0&0&0&-2\end{bmatrix},
+\]
+由于闭环矩阵为块对角矩阵，其特征多项式等于两个对角块的特征多项式之积，即
+\[
+\det(sI-A-BK)=(s+2)\bigl[(s+2)(s^2+2s+2)\bigr]
+=(s+2)^2(s^2+2s+2).
+\]
+因此四个极点恰为 $-2,-2,-1\pm j$。
+\end{proofstep}
+\end{solution}
+
+\begin{problem}[原题 12]
+系统开环传递函数为
+\[
+g_o(s)=\frac{(s+2)(s+3)}{(s+1)(s-2)(s+4)}.
+\]
+问是否存在状态反馈矩阵 $K$，使闭环从 $v$ 到 $y$ 的传递函数为
+\[
+g_c(s)=\frac{s+3}{(s+2)(s+4)}.
+\]
+若存在，求 $K$。
+\end{problem}
+\begin{solution}
+\begin{proofstep}{选择并验证状态空间实现}
+反馈矩阵的数值依赖状态坐标。题面只给传递函数，因此先选取一个最小能控标准形实现。
+展开分子、分母，得到
+\[
+g_o(s)=\frac{s^2+5s+6}{s^3+3s^2-6s-8}.
+\]
+令辅助变量 $w$ 满足 $w^{(3)}+3\ddot w-6\dot w-8w=u$，
+再选 $x_1=w,x_2=\dot w,x_3=\ddot w$，输出取 $y=6w+5\dot w+\ddot w$。
+这样在零初值下就有 $Y/U=(s^2+5s+6)/(s^3+3s^2-6s-8)$。
+相应状态方程为
+\[
+\dot x=Ax+bu,\quad y=cx,\qquad
+A=\begin{bmatrix}0&1&0\\0&0&1\\8&6&-3\end{bmatrix},\quad
+b=\begin{bmatrix}0\\0\\1\end{bmatrix},\quad c=\begin{bmatrix}6&5&1\end{bmatrix},\quad D=0.
+\]
+分子零点为 $-2,-3$，分母极点为 $-1,2,-4$，二者没有公共根，故其最小阶数为 3，所选实现是最小实现。
+\end{proofstep}
+
+\begin{proofstep}{推导状态反馈后的传递函数}
+采用 $u=Kx+v$，令 $K=[k_1\ k_2\ k_3]$。反馈后第三个状态方程为
+\[
+\dot x_3=(8+k_1)x_1+(6+k_2)x_2+(-3+k_3)x_3+v.
+\]
+前两式仍为 $\dot x_1=x_2,\dot x_2=x_3$，所以零初值下 $X_2=sX_1,X_3=s^2X_1$。
+将其代入第三式并移项，得到
+\[
+\underbrace{\bigl[s^3+(3-k_3)s^2+(-6-k_2)s-8-k_1\bigr]}_{d_K(s)}X_1=V.
+\]
+又因为 $Y=6X_1+5X_2+X_3=(s^2+5s+6)X_1$，故
+\[
+c(sI-A-bK)^{-1}b
+=\frac{s^2+5s+6}{s^3+(3-k_3)s^2+(-6-k_2)s-8-k_1}.
+\]
+这里分子保持不变，反馈通过 $k_1,k_2,k_3$ 改变分母的三个系数。
+\end{proofstep}
+
+\begin{proofstep}{按目标传递函数求反馈增益}
+为了得到题设 $g_c$，需使分母等于
+\[
+\frac{(s+2)(s+3)}{g_c(s)}=(s+2)^2(s+4)
+=s^3+8s^2+20s+16.
+\]
+目标传函可写成同一个三次分母、二次分子的形式：
+\[
+g_c(s)=\frac{(s+2)(s+3)}{(s+2)^2(s+4)}.
+\]
+因此要求 $d_K(s)=s^3+8s^2+20s+16$。逐项匹配得到
+\[
+3-k_3=8,\qquad -6-k_2=20,\qquad -8-k_1=16.
+\]
+解得
+\[
+\boxed{K=\begin{bmatrix}-24&-26&-5\end{bmatrix}.}
+\]
+\end{proofstep}
+
+\pagebreak
+\begin{proofstep}{核验传递函数并解释阶数下降}
+\[
+c(sI-A-bK)^{-1}b
+=\frac{(s+2)(s+3)}{(s+2)^2(s+4)}
+=\frac{s+3}{(s+2)(s+4)}.
+\]
+因此该反馈确实存在。闭环内部仍有三个状态和极点 $-2,-2,-4$，其中一个 $-2$ 模态在传递函数中被约去。
+状态反馈保持能控性，而这里输出能观性发生了改变，因此闭环传递函数的最小阶数降为 2 并不矛盾。
+例如取 $q=[1,-2,4]^{\mathsf T}$，有 $(A+bK)q=-2q$ 而 $cq=6-10+4=0$，
+所以至少有一个 $-2$ 的模态对输出不可见，正对应被约去的因子。
+若将所选实现作坐标变换 $x=Tz$，则同一反馈在 $z$ 坐标下写为 $u=(KT)z+v$。
+\end{proofstep}
+\end{solution}
+
+\begin{problem}[原题 13]
+给定系统
+\[
+\dot x=\begin{bmatrix}2&1&0\\0&1&0\\1&0&1\end{bmatrix}x+
+\begin{bmatrix}0\\1\\0\end{bmatrix}u.
+\]
+求一个反馈矩阵 $K$，使 $A+bK$ 相似于 $F=\operatorname{diag}(-3,-2,-1)$。
+\end{problem}
+\begin{solution}
+\begin{proofstep}{把相似性要求转化为极点配置}
+采用 $u=Kx+v$，闭环矩阵为 $A+bK$。先计算
+\[
+Ab=\begin{bmatrix}1\\1\\0\end{bmatrix},\qquad
+A^2b=\begin{bmatrix}3\\1\\1\end{bmatrix}.
+\]
+所以
+\[
+\mathcal C=[b,Ab,A^2b]
+=\begin{bmatrix}0&1&3\\1&1&1\\0&0&1\end{bmatrix},\qquad
+\det\mathcal C=-1\ne0.
+\]
+故系统完全能控。目标特征值互不相同，只需配置到 $-3,-2,-1$，便可由三个独立特征向量构造相似变换。
+\end{proofstep}
+
+\pagebreak
+\begin{proofstep}{展开特征行列式并求出反馈矩阵}
+设 $K=[k_1\ k_2\ k_3]$，则
+\begin{align*}
+p_K(s)&=\begin{vmatrix}s-2&-1&0\\-k_1&s-1-k_2&-k_3\\-1&0&s-1\end{vmatrix}\\
+&=(s-2)(s-1-k_2)(s-1)-k_1(s-1)-k_3.
+\end{align*}
+这里沿第一行展开，第一项来自主对角线上三个元素的乘积，第二个二阶余子式给出
+$-k_1(s-1)-k_3$。整理幂次后，有
+\[
+\det(sI-A-bK)
+=s^3+(-k_2-4)s^2+(-k_1+3k_2+5)s+k_1-2k_2-k_3-2.
+\]
+期望多项式为 $(s+3)(s+2)(s+1)=s^3+6s^2+11s+6$。
+令两个首一多项式对应系数相同，得到
+\[
+-k_2-4=6,\quad -k_1+3k_2+5=11,\quad k_1-2k_2-k_3-2=6.
+\]
+由第一式得 $k_2=-10$，第二式给出 $k_1=-36$，第三式进而给出 $k_3=-24$。故
+\[
+\boxed{K=\begin{bmatrix}-36&-10&-24\end{bmatrix}},\qquad
+A+bK=\begin{bmatrix}2&1&0\\-36&-9&-24\\1&0&1\end{bmatrix}.
+\]
+\end{proofstep}
+
+\begin{proofstep}{求出相似变换矩阵，验证目标对角形}
+记 $t=[t^{(1)},t^{(2)},t^{(3)}]^{\mathsf T}$，由 $(A+bK)t=\lambda t$ 的第一、三行可得
+\[
+t^{(2)}=(\lambda-2)t^{(1)},\qquad t^{(1)}=(\lambda-1)t^{(3)}.
+\]
+取 $t^{(3)}=1$，便得到候选特征向量
+$t(\lambda)=[\lambda-1,(\lambda-2)(\lambda-1),1]^{\mathsf T}$。
+当 $\lambda=-3,-2,-1$ 时，第二行也成立，因此相应特征向量分别为
+\[
+t_1=\begin{bmatrix}-4\\20\\1\end{bmatrix},\quad
+t_2=\begin{bmatrix}-3\\12\\1\end{bmatrix},\quad
+t_3=\begin{bmatrix}-2\\6\\1\end{bmatrix}.
+\]
+令 $T=[t_1\ t_2\ t_3]$，则 $\det T=2\ne0$，而且
+$(A+bK)T=TF$。所以在 $x=Tz$ 下，
+\[
+\boxed{T^{-1}(A+bK)T=F,}
+\]
+满足题目的相似性要求。
+\end{proofstep}
+\end{solution}
+\end{document}

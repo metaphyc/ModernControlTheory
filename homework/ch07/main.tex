@@ -1,0 +1,439 @@
+\documentclass[11pt]{article}
+\newcommand{\HomeworkHeader}{习题七}
+\input{../_shared/preamble.tex}
+
+\begin{document}
+\makeCustomTitle{习题七}
+% 来源：assets/习题七.pdf，红框原题 2、5。
+% 原题 2 跨 PDF 第 1、2 页（教材第 164、165 页）；
+% 原题 5 在 PDF 第 2 页（教材第 165 页）。第 3 页无红框题。
+% 两道选中题目均无附图。
+
+\begin{problem}[原题 2]
+给定系统和初始条件
+\[
+ \dot x=\begin{bmatrix}0&1\\0&0\end{bmatrix}x
+ +\begin{bmatrix}0\\1\end{bmatrix}u,\qquad
+ x(0)=\begin{bmatrix}1\\2\end{bmatrix},
+\]
+以及性能指标
+\[
+ J=\int_0^\infty(2x_1^2+2x_1x_2+x_2^2+u^2)\,dt.
+\]
+求最优控制及最优性能指标值。
+\end{problem}
+\begin{solution}
+\begin{proofstep}{识别性能指标权重并检查适用条件}
+将性能指标写成 $J=\int_0^\infty(x^{\mathsf T}Qx+u^{\mathsf T}Ru)\,dt$，其中
+\[
+ Q=\begin{bmatrix}2&1\\1&1\end{bmatrix}>0,\qquad R=1.
+\]
+交叉项 $2x_1x_2$ 对应 $Q_{12}=Q_{21}=1$。
+这是因为 $x^{\mathsf T}Qx=Q_{11}x_1^2+2Q_{12}x_1x_2+Q_{22}x_2^2$。
+由 $Q_{11}=2>0$、$\det Q=2\times1-1=1>0$，可知 $Q$ 正定。
+$[B\;AB]=\begin{bmatrix}0&1\\1&0\end{bmatrix}$ 满秩，
+系统可控，且 $Q>0$ 保证可检测，因此存在唯一正定的稳定化 Riccati 解。
+原题积分前没有 $\tfrac12$，下文取值函数 $V(x)=x^{\mathsf T}Px$。
+\end{proofstep}
+
+\begin{proofstep}{建立 Riccati 方程并逐项展开}
+因为 $\nabla V=2Px$，Hamilton--Jacobi--Bellman 方程中的控制项为
+\[
+ u^{\mathsf T}Ru+2x^{\mathsf T}PBu.
+\]
+对 $u$ 求导，$2Ru+2B^{\mathsf T}Px=0$，从而
+$u^*=-R^{-1}B^{\mathsf T}Px$。
+将它代回值函数方程，得到代数 Riccati 方程
+\[
+ A^{\mathsf T}P+PA-PBR^{-1}B^{\mathsf T}P+Q=0
+\]
+令 $P=\begin{bmatrix}p&q\\q&r\end{bmatrix}$，本题各矩阵乘积为
+\[
+ A^{\mathsf T}P+PA=\begin{bmatrix}0&p\\p&2q\end{bmatrix},\qquad
+ PBR^{-1}B^{\mathsf T}P=\begin{bmatrix}q^2&qr\\qr&r^2\end{bmatrix}.
+\]
+故方程的 $(1,1),(1,2),(2,2)$ 三个独立分量分别给出
+\[
+ \begin{cases}
+ 2-q^2=0,\\
+ p-qr+1=0,\\
+ 2q-r^2+1=0.
+ \end{cases}
+\]
+\end{proofstep}
+\begin{proofstep}{选择稳定化分支并验证正定性}
+由第一式可得 $q=\pm\sqrt2$；再由第三式得 $r^2=1+2q$，
+第二式给出 $p=qr-1$。
+选择根号的符号时，需要检查最优闭环的稳定性，而非任取代数根。
+本题
+\[
+ A-BB^{\mathsf T}P=\begin{bmatrix}0&1\\-q&-r\end{bmatrix},\qquad
+ \det(sI-A+BB^{\mathsf T}P)=s^2+rs+q.
+\]
+二阶 Hurwitz 条件是 $r>0,q>0$，故必须取
+\[
+ q=\sqrt2,\qquad r=\sqrt{1+2\sqrt2},\qquad p=qr-1.
+\]
+此外 $q=-\sqrt2$ 会使 $r^2=1-2\sqrt2<0$，无法给出实对称解。
+为简写，令 $a=\sqrt2$、$b=\sqrt{1+2\sqrt2}$。
+于是
+\[
+ \boxed{P=\begin{bmatrix}ab-1&a\\a&b\end{bmatrix},\qquad
+ u^*(t)=-a x_1(t)-b x_2(t).}
+\]
+按教材 $u=Kx$ 的符号约定，$K=[-a\;-b]$。
+此时 $(ab)^2=2(1+2\sqrt2)>1$，故 $p=ab-1>0$。
+第二个顺序主子式为
+\[
+ \det P=(ab-1)b-a^2=ab^2-b-2
+ =\sqrt2(1+2\sqrt2)-b-2=2+\sqrt2-b.
+\]
+又因 $(2+\sqrt2)^2-b^2=5+2\sqrt2>0$ 且二者均正，
+所以 $\det P>0$，从而 $P>0$。
+由二次方程求根公式得到闭环极点
+\[
+ \boxed{\lambda_{1,2}=-\frac b2\pm\frac{j}{2}\sqrt{2\sqrt2-1},}
+\]
+实部严格为负，验证了所取的是稳定化解。
+\end{proofstep}
+
+\tcbbreak
+\begin{proofstep}{证明最优性并代入初值计算最优代价}
+令 $V=x^{\mathsf T}Px$，沿原系统有
+\[
+ \dot V=x^{\mathsf T}(A^{\mathsf T}P+PA)x
+ +2uB^{\mathsf T}Px.
+\]
+利用 Riccati 方程代换 $A^{\mathsf T}P+PA=PBB^{\mathsf T}P-Q$，整理为
+\[
+ x^{\mathsf T}Qx+u^2
+ =-\dot V+(u+B^{\mathsf T}Px)^2.
+\]
+对于趋于原点的可容许轨迹，对上式从 $0$ 到 $\infty$ 积分：
+\[
+ J=x(0)^{\mathsf T}Px(0)
+ +\int_0^\infty (u+B^{\mathsf T}Px)^2\,dt
+ \geq x(0)^{\mathsf T}Px(0).
+\]
+取 $u=u^*=-B^{\mathsf T}Px$ 时，平方项恒为零，且已证闭环稳定，
+故下界可达到。这也说明本题的最优值没有额外系数 $\tfrac12$。
+将 $x(0)=[1\;2]^{\mathsf T}$ 代入：
+\[
+ \begin{aligned}
+ J^*&=\begin{bmatrix}1&2\end{bmatrix}
+       \begin{bmatrix}p&q\\q&r\end{bmatrix}\begin{bmatrix}1\\2\end{bmatrix}\\
+ &=p+4q+4r=(ab-1)+4a+4b=(a+4)b+4a-1.
+ \end{aligned}
+\]
+因此
+\[
+ \boxed{J^*=x(0)^{\mathsf T}Px(0)
+ =(4+\sqrt2)\sqrt{1+2\sqrt2}+4\sqrt2-1.}
+\]
+\end{proofstep}
+\begin{proofstep}{写出给定初值对应的最优状态轨迹}
+最优闭环满足
+\[
+ \dot x_1^*=x_2^*,\qquad \dot x_2^*=-ax_1^*-bx_2^*,
+\]
+故 $\ddot x_1^*+b\dot x_1^*+ax_1^*=0$。
+记 $\omega=\tfrac12\sqrt{2\sqrt2-1}$，通解为
+$x_1^*=e^{-bt/2}(c_1\cos\omega t+c_2\sin\omega t)$。
+由 $x_1^*(0)=1$、$\dot x_1^*(0)=x_2^*(0)=2$，有
+\[
+ c_1=1,\qquad -\frac b2c_1+\omega c_2=2,
+ \qquad c_2=\frac{2+b/2}{\omega}.
+\]
+所以
+\[
+ x_1^*(t)=e^{-bt/2}\left[
+ \cos(\omega t)+\frac{2+b/2}{\omega}\sin(\omega t)\right],
+ \qquad x_2^*(t)=\dot x_1^*(t),
+\]
+相应最优控制为 $u^*(t)=-ax_1^*(t)-bx_2^*(t)$。
+\end{proofstep}
+\end{solution}
+
+\clearpage
+\begin{problem}[原题 5]
+给定系统
+\[
+ \dot x=\begin{bmatrix}1&0\\0&2\end{bmatrix}x
+ +\begin{bmatrix}1\\1\end{bmatrix}u,\qquad
+ x(0)=\begin{bmatrix}2\\1\end{bmatrix},\qquad
+ y=\begin{bmatrix}1&2\end{bmatrix}x,
+\]
+以及性能指标
+\[
+ J=\int_0^\infty(y^2+2u^2)\,dt.
+\]
+求最优控制、最优性能指标值及最优闭环系统的特征值。
+\end{problem}
+\begin{solution}
+\begin{proofstep}{由输出代价确定状态权重并检验条件}
+因为 $y=x_1+2x_2$，有 $y^2=x_1^2+4x_1x_2+4x_2^2$，故
+\[
+ Q=C^{\mathsf T}C=\begin{bmatrix}1&2\\2&4\end{bmatrix},\qquad R=2.
+\]
+虽然 $Q$ 仅半正定，但
+\[
+ \det[B\;AB]=\det\begin{bmatrix}1&1\\1&2\end{bmatrix}=1,
+ \qquad
+ \det\begin{bmatrix}C\\CA\end{bmatrix}
+ =\det\begin{bmatrix}1&2\\1&4\end{bmatrix}=2,
+\]
+所以系统可控且可观测，满足无限时域 LQR 的稳定化条件。
+这里 $R=2$ 是输入二次项的系数。
+原题没有 $\tfrac12$，采用 $V=x^{\mathsf T}Px$ 时最优反馈仍为
+$u^*=-R^{-1}B^{\mathsf T}Px=-\tfrac12 B^{\mathsf T}Px$。
+\end{proofstep}
+
+\begin{proofstep}{展开代数 Riccati 方程}
+令
+\[
+ P=\begin{bmatrix}p&q\\q&r\end{bmatrix},\qquad
+ F=R^{-1}B^{\mathsf T}P=\begin{bmatrix}f_1&f_2\end{bmatrix},
+ \quad f_1=\frac{p+q}{2},\quad f_2=\frac{q+r}{2}.
+\]
+先计算
+\[
+ A^{\mathsf T}P+PA=\begin{bmatrix}2p&3q\\3q&4r\end{bmatrix},\qquad
+ PB=\begin{bmatrix}p+q\\q+r\end{bmatrix},
+\]
+\[
+ \frac12PBB^{\mathsf T}P
+ =\frac12\begin{bmatrix}(p+q)^2&(p+q)(q+r)\\(p+q)(q+r)&(q+r)^2\end{bmatrix}.
+\]
+因此 Riccati 方程
+$A^{\mathsf T}P+PA-\tfrac12PBB^{\mathsf T}P+Q=0$ 的各独立分量为
+\[
+ \begin{cases}
+ 2p-\tfrac12(p+q)^2+1=0,\\
+ 3q-\tfrac12(p+q)(q+r)+2=0,\\
+ 4r-\tfrac12(q+r)^2+4=0.
+ \end{cases}
+\]
+利用 $p+q=2f_1,q+r=2f_2$，可进一步写成
+\[
+ 2p-2f_1^2+1=0,\qquad
+ 3q-2f_1f_2+2=0,\qquad
+ 4r-2f_2^2+4=0.
+\]
+这些代数方程可能有多组解，下面用闭环稳定性选出所需的一组。
+\end{proofstep}
+\begin{proofstep}{计算 Hamilton 矩阵的特征多项式}
+考虑 Hamilton 矩阵
+\[
+ \mathcal H=\begin{bmatrix}A&-BR^{-1}B^{\mathsf T}\\-Q&-A^{\mathsf T}\end{bmatrix}
+ =\begin{bmatrix}
+ 1&0&-\frac12&-\frac12\\
+ 0&2&-\frac12&-\frac12\\
+ -1&-2&-1&0\\
+ -2&-4&0&-2
+ \end{bmatrix}.
+\]
+下面给出行列式的计算过程。记
+\[
+ D=sI-A=\operatorname{diag}(s-1,s-2),\qquad
+ E=sI+A^{\mathsf T}=\operatorname{diag}(s+1,s+2).
+\]
+则
+\[
+ sI-\mathcal H=\begin{bmatrix}D&\tfrac12BB^{\mathsf T}\\C^{\mathsf T}C&E\end{bmatrix}.
+\]
+先对 $D$ 作 Schur 补，再对秩一修正使用行列式公式，得到
+\[
+ \begin{aligned}
+ \det(sI-\mathcal H)
+ &=\det D\,\det\left(E-\tfrac12C^{\mathsf T}CD^{-1}BB^{\mathsf T}\right)\\
+ &=\det D\,\det E\left[1-\tfrac12(CD^{-1}B)(B^{\mathsf T}E^{-1}C^{\mathsf T})\right].
+ \end{aligned}
+\]
+其中两个标量为
+\[
+ CD^{-1}B=\frac1{s-1}+\frac2{s-2}
+ =\frac{3s-4}{(s-1)(s-2)},
+\]
+\[
+ B^{\mathsf T}E^{-1}C^{\mathsf T}=\frac1{s+1}+\frac2{s+2}
+ =\frac{3s+4}{(s+1)(s+2)}.
+\]
+代入并约去分母，得到多项式恒等式
+\[
+ \begin{aligned}
+ \det(sI-\mathcal H)
+ &=(s^2-1)(s^2-4)-\frac12(3s-4)(3s+4)\\
+ &=s^4-5s^2+4-\frac92s^2+8\\
+ &=s^4-\frac{19}{2}s^2+12.
+ \end{aligned}
+\]
+以上计算最初在 $s\ne\pm1,\pm2$ 时使用逆矩阵；化成多项式后恒等式对所有 $s$ 成立。
+令 $z=s^2$，则 $z^2-\tfrac{19}2z+12=0$，即 $2z^2-19z+24=0$。
+按二次方程求根公式，两根为
+\[
+ z=\frac{19\pm\sqrt{19^2-4\times24\times2}}4
+ =\frac{19\pm13}{4}=8,\ \frac32.
+\]
+因此
+\[
+ \det(sI-\mathcal H)=(s^2-8)\left(s^2-\frac32\right).
+\]
+\end{proofstep}
+\begin{proofstep}{选择稳定特征值，并由系数匹配求反馈增益}
+Riccati 方程可以重排为
+$-Q-A^{\mathsf T}P=P(A-BR^{-1}B^{\mathsf T}P)$，因而
+\[
+ \mathcal H\begin{bmatrix}I\\P\end{bmatrix}
+ =\begin{bmatrix}I\\P\end{bmatrix}(A-BF),
+\]
+该式说明 $\begin{bmatrix}I\\P\end{bmatrix}$ 的列空间是
+$\mathcal H$ 的不变子空间，$A-BF$ 的两个特征值来自 $\mathcal H$。
+由于要求最优闭环渐近稳定，必须取两枚负特征值；取正根的代数分支不符合稳定化要求。
+记
+\[
+ a=2\sqrt2,\qquad b=\frac{\sqrt6}{2},\qquad
+ \sigma=a+b,\qquad \rho=ab=2\sqrt3.
+\]
+则所需闭环多项式为 $(s+a)(s+b)=s^2+\sigma s+\rho$。
+另一方面
+\[
+ A-BF=\begin{bmatrix}1-f_1&-f_2\\-f_1&2-f_2\end{bmatrix},
+\]
+\[
+ \det(sI-A+BF)=s^2+(f_1+f_2-3)s+2-2f_1-f_2.
+\]
+因此比较 $s$ 项和常数项系数得
+\[
+ f_1+f_2=3+\sigma,\qquad 2f_1+f_2=2-\rho.
+\]
+第二式减第一式，得到 $f_1=-1-\sigma-\rho$；
+再代回第一式求得 $f_2=4+2\sigma+\rho$，即
+\[
+ \boxed{f_1=-1-\sigma-\rho,\qquad f_2=4+2\sigma+\rho.}
+\]
+\end{proofstep}
+\begin{proofstep}{恢复 Riccati 解并给出最优反馈}
+由第 2 步的三个 Riccati 分量方程，依次求得
+\[
+ p=f_1^2-\frac12,\qquad
+ q=\frac{2f_1f_2-2}{3},\qquad
+ r=\frac{f_2^2}{2}-1.
+\]
+展开为
+\[
+ \begin{aligned}
+ p&=22+10\sqrt2+8\sqrt3+9\sqrt6,\\
+ q&=-24-14\sqrt2-12\sqrt3-10\sqrt6,\\
+ r&=32+22\sqrt2+16\sqrt3+12\sqrt6.
+ \end{aligned}
+\]
+需要同时检查恢复出的 $P$ 与原增益定义一致。直接相加可得
+\[
+ \begin{aligned}
+ p+q&=-2-4\sqrt2-4\sqrt3-\sqrt6
+     =2(-1-\sigma-\rho)=2f_1,\\
+ q+r&=8+8\sqrt2+4\sqrt3+2\sqrt6
+     =2(4+2\sigma+\rho)=2f_2.
+ \end{aligned}
+\]
+所以 $F=\tfrac12 B^{\mathsf T}P$ 的定义成立，三个分量方程也随之同时满足。
+此外 $p>0$ 且
+\[
+ \det P=176+132\sqrt2+108\sqrt3+72\sqrt6>0,
+\]
+故 $P>0$。所求最优控制为
+\[
+ \boxed{u^*(t)=(1+\sigma+\rho)x_1(t)
+ -(4+2\sigma+\rho)x_2(t).}
+\]
+按教材的 $u=Kx$ 约定，反馈矩阵为
+$K=-F=\begin{bmatrix}1+\sigma+\rho&-4-2\sigma-\rho\end{bmatrix}$。
+\end{proofstep}
+
+\begin{proofstep}{完成平方，求最优性能指标并核对闭环特征值}
+令 $V=x^{\mathsf T}Px$，利用 Riccati 方程和 $B^{\mathsf T}P=2F$，有
+\[
+ \begin{aligned}
+ \dot V
+ &=x^{\mathsf T}(A^{\mathsf T}P+PA)x+2x^{\mathsf T}PBu\\
+ &=x^{\mathsf T}(2F^{\mathsf T}F-Q)x+4(Fx)u\\
+ &=2(Fx)^2-y^2+4(Fx)u.
+ \end{aligned}
+\]
+整理后可写成
+\[
+ y^2+2u^2=-\dot V+2(u+Fx)^2.
+\]
+沿趋于原点的可容许轨迹积分，得
+\[
+ J=x(0)^{\mathsf T}Px(0)+2\int_0^\infty(u+Fx)^2\,dt.
+\]
+取 $u=-Fx$ 时，平方项为零，稳定闭环保证 $V(\infty)=0$，故达到最小值。
+代入 $x(0)=[2\;1]^{\mathsf T}$，先计算
+\[
+ J^*=\begin{bmatrix}2&1\end{bmatrix}
+ \begin{bmatrix}p&q\\q&r\end{bmatrix}\begin{bmatrix}2\\1\end{bmatrix}
+ =2(2p+q)+(2q+r)=4p+4q+r.
+\]
+再把各根式的系数分别相加：
+\[
+ \begin{aligned}
+ 4p+4q+r
+ &=(88-96+32)+(40-56+22)\sqrt2\\
+ &\quad +(32-48+16)\sqrt3+(36-40+12)\sqrt6\\
+ &=24+6\sqrt2+8\sqrt6.
+ \end{aligned}
+\]
+所以
+\[
+ \boxed{J^*=\begin{bmatrix}2&1\end{bmatrix}P
+ \begin{bmatrix}2\\1\end{bmatrix}=4p+4q+r
+ =24+6\sqrt2+8\sqrt6\approx52.0812.}
+\]
+最优闭环的特征值为
+\[
+ \boxed{\lambda_1=-2\sqrt2,\qquad
+ \lambda_2=-\frac{\sqrt6}{2}.}
+\]
+两者均严格为负，与选择的 Hamilton 稳定子空间一致。
+\end{proofstep}
+\tcbbreak
+\begin{proofstep}{求给定初值对应的最优控制时间函数}
+由于闭环有两个不同的实极点 $-a,-b$，最优控制具有形式
+\[
+ u^*(t)=c_a e^{-at}+c_b e^{-bt}.
+\]
+利用已求出的反馈增益，先计算初值
+\[
+ u^*(0)=-F\begin{bmatrix}2\\1\end{bmatrix}
+ =-(2f_1+f_2)=\rho-2.
+\]
+又有
+\[
+ \begin{aligned}
+ \dot u^*(0)&=-F(A-BF)x(0)\\
+ &=-2(f_1+f_2)+(f_1+f_2)(2f_1+f_2)\\
+ &=-2(3+\sigma)+(3+\sigma)(2-\rho)
+ =-\rho(3+\sigma).
+ \end{aligned}
+\]
+因此 $c_a,c_b$ 满足
+\[
+ c_a+c_b=\rho-2,\qquad ac_a+bc_b=\rho(3+\sigma).
+\]
+第一式乘以 $b$ 并从第二式减去，得到
+\[
+ c_a=\frac{\rho(3+\sigma)-b(\rho-2)}{a-b}
+ =\frac{\rho(3+a)+2b}{a-b}.
+\]
+再用 $c_b=\rho-2-c_a$，得到
+$c_b=-[\rho(3+b)+2a]/(a-b)$。所以
+\[
+ \boxed{u^*(t)=
+ \frac{\rho(3+a)+2b}{a-b}e^{-at}
+ -\frac{\rho(3+b)+2a}{a-b}e^{-bt}.}
+\]
+该时间函数与状态反馈 $u^*=-Fx^*$ 等价，并随时间趋于零。
+\end{proofstep}
+\end{solution}
+\end{document}

@@ -1,0 +1,517 @@
+\documentclass[11pt]{article}
+\newcommand{\HomeworkHeader}{习题六}
+\input{../_shared/preamble.tex}
+
+\begin{document}
+\makeCustomTitle{习题六}
+% 来源：assets/习题六.pdf，红框原题 1、2、6、7。
+% 原题 1、2：PDF 第 1 页（教材第 142 页）；
+% 原题 6、7：PDF 第 2 页（教材第 143 页）。第 3 页无红框题。
+% 以上选中题目均无附图；未选中的图 6.4 不纳入本作业。
+
+\begin{problem}[原题 1]
+给定系统
+\[
+ \dot x=\begin{bmatrix}0&1\\0&0\end{bmatrix}x+
+ \begin{bmatrix}0\\1\end{bmatrix}u,
+ \qquad y=\begin{bmatrix}1&0\end{bmatrix}x.
+\]
+求全阶观测器，使其特征值为 $-2,-4$。
+\end{problem}
+\begin{solution}
+\begin{proofstep}{检验可观测性，确定观测器结构}
+全阶观测器的维数与原系统相同，需同时产生 $\hat x_1,\hat x_2$。
+先计算 $CA=[0\;1]$，于是可观测矩阵为
+\[
+ \mathcal O=\begin{bmatrix}C\\CA\end{bmatrix}
+ =\begin{bmatrix}1&0\\0&1\end{bmatrix},\qquad
+ \operatorname{rank}\mathcal O=2,
+\]
+故可任意配置观测器极点。取
+\[
+ \dot{\hat x}=A\hat x+Bu+L(y-C\hat x),\qquad
+ L=\begin{bmatrix}l_1\\l_2\end{bmatrix}.
+\]
+其中 $y-C\hat x$ 是实际输出与估计输出之差，$L$ 为待定增益。
+\end{proofstep}
+\begin{proofstep}{由误差方程配置两个极点}
+定义估计误差 $e=\hat x-x$。将观测器方程减去原状态方程，可得
+\[
+ \dot e=A(\hat x-x)+L(Cx-C\hat x)=(A-LC)e.
+\]
+输入项 $Bu$ 相互抵消，所以误差的收敛性只由 $A-LC$ 决定。具体有
+\[
+ A-LC=\begin{bmatrix}-l_1&1\\-l_2&0\end{bmatrix},\qquad
+ sI-A+LC=\begin{bmatrix}s+l_1&-1\\l_2&s\end{bmatrix}.
+\]
+展开二阶行列式，并与目标多项式比较：
+\[
+ \det(sI-A+LC)=s^2+l_1s+l_2
+ =(s+2)(s+4)=s^2+6s+8.
+\]
+即 $l_1=6,l_2=8$，因此 $L=[6\;8]^{\mathsf T}$。
+\end{proofstep}
+\begin{proofresult}{全阶观测器及收敛性}
+将增益代回，可实施方程为
+\[
+ \boxed{\begin{aligned}
+  \dot{\hat x}_1&=\hat x_2+6(y-\hat x_1),\\
+  \dot{\hat x}_2&=u+8(y-\hat x_1).
+ \end{aligned}}
+\]
+误差矩阵 $\begin{bmatrix}-6&1\\-8&0\end{bmatrix}$ 的特征值恰为
+$-2,-4$，且 $e(t)=e^{(A-LC)t}e(0)$。
+因为两个特征值实部均小于零，任意初始估计误差均趋于零。
+\end{proofresult}
+\end{solution}
+
+\begin{problem}[原题 2]
+给定系统
+\[
+ \dot x=\begin{bmatrix}1&3\\2&1\end{bmatrix}x+
+ \begin{bmatrix}1\\2\end{bmatrix}u,
+ \qquad y=\begin{bmatrix}0&1\end{bmatrix}x.
+\]
+求特征值为 $-3$ 的降维观测器。
+\end{problem}
+\begin{solution}
+\begin{proofstep}{分离已测状态与待估状态}
+由于 $x_2=y$ 已直接测得，只需估计 $z=x_1$。系统写成
+\[
+ \dot y=y+2z+2u,\qquad \dot z=3y+z+u.
+\]
+分块矩阵为 $A_{11}=1,A_{12}=2,A_{21}=3,A_{22}=1,B_1=2,B_2=1$。
+由 $\dot y-y-2u=2z$ 可看出，输出的动态变化包含待估状态 $z$ 的信息。
+\end{proofstep}
+\begin{proofstep}{构造误差反馈并配置一阶极点}
+以估计值 $\hat z$ 预测 $\dot y$，预测误差为
+\[
+ \dot y-(y+2\hat z+2u)=2(z-\hat z).
+\]
+将此误差注入 $z$ 的模型，先写出形式上的估计方程
+\[
+ \dot{\hat z}=3y+\hat z+u+\ell(\dot y-y-2\hat z-2u),
+\]
+定义 $e_z=\hat z-z$，相减得到
+\[
+ \dot e_z=e_z+\ell\,2(z-\hat z)=(1-2\ell)e_z.
+\]
+令 $1-2\ell=-3$ 得 $\ell=2$。
+\end{proofstep}
+\tcbbreak
+\begin{proofstep}{消去输出导数，得到可实施结构}
+上式含有 $\dot y$，因此尚未作为最终实现。
+定义内部状态 $w=\hat z-\ell y$，则 $\hat z=w+\ell y$，并且
+\[
+ \begin{aligned}
+ \dot w
+ &=\dot{\hat z}-\ell\dot y\\
+ &=(1-2\ell)\hat z+(3-\ell)y+(1-2\ell)u\\
+ &=(1-2\ell)w+\bigl[(1-2\ell)\ell+3-\ell\bigr]y
+   +(1-2\ell)u.
+ \end{aligned}
+\]
+代入 $\ell=2$，输出微分项已完全消去：
+\[
+ \dot w=-3(w+2y)+(3-2)y+(1-4)u
+ =-3w-5y-3u.
+\]
+最终可实施的降维观测器为
+\[
+ \boxed{\dot w=-3w-5y-3u,\qquad
+ \hat x=\begin{bmatrix}w+2y\\y\end{bmatrix}.}
+\]
+它仅使用 $u,y$，无需测量 $\dot y$；其估计误差为
+$\hat x-x=[e_z\;0]^{\mathsf T}$，且
+\[
+ e_z(t)=e^{-3t}e_z(0),\qquad e_z(0)=w(0)+2y(0)-x_1(0).
+\]
+因此内部状态 $w(0)$ 可任意选取，估计最终均收敛到真实状态。
+\end{proofstep}
+\end{solution}
+
+\begin{problem}[原题 6]
+单输入单输出系统的传递函数为
+\[
+ G(s)=\frac1{s(s+1)(s+2)}.
+\]
+\begin{enumerate}
+ \item 确定降维观测器，使其特征值均为 $-5$。
+ \item 确定基于该观测器的输出动态反馈律，使闭环传递函数极点为
+ $-3,-\tfrac12\pm\tfrac{\sqrt3}{2}j$。
+ \item 给出整个闭环系统的传递函数。
+\end{enumerate}
+\end{problem}
+\begin{solution}
+\textbf{(1) 选取最小实现并设计二阶观测器。}
+\begin{proofstep}{由传递函数建立状态空间实现}
+将分母展开为 $s^3+3s^2+2s$，在零初始条件下对应
+\[
+ y^{(3)}+3\ddot y+2\dot y=u.
+\]
+用 $x_1=y,x_2=\dot y,x_3=\ddot y$ 定义一种状态实现，得到
+\[
+ A=\begin{bmatrix}0&1&0\\0&0&1\\0&-2&-3\end{bmatrix},\quad
+ B=\begin{bmatrix}0\\0\\1\end{bmatrix},\quad
+ C=\begin{bmatrix}1&0&0\end{bmatrix}.
+\]
+这里的导数用于定义状态坐标，最终观测器不需要测量这些导数。
+该实现满足 $C(sI-A)^{-1}B=G(s)$，且
+\[
+ \mathcal C=\begin{bmatrix}0&0&1\\0&1&-3\\1&-3&7\end{bmatrix},
+ \quad\det\mathcal C=-1,\qquad\mathcal O=I_3.
+\]
+所以它既可控又可观测，是最小实现。
+系统三阶、直接测得一个状态，故降维观测器为二阶。
+\end{proofstep}
+\begin{proofstep}{按已测量和未测量状态分块，并消去输出微分}
+以 $y=x_1$、$z=[x_2\;x_3]^{\mathsf T}$ 分块，有
+\[
+ \dot y=A_{12}z,\qquad \dot z=A_{22}z+B_2u,
+ \quad A_{12}=\begin{bmatrix}1&0\end{bmatrix},\quad
+ A_{22}=\begin{bmatrix}0&1\\-2&-3\end{bmatrix},\quad
+ B_2=\begin{bmatrix}0\\1\end{bmatrix}.
+\]
+一般分块系统可写成
+\[
+ \dot y=A_{11}y+A_{12}z+B_1u,\qquad
+ \dot z=A_{21}y+A_{22}z+B_2u.
+\]
+利用输出动态构造形式估计方程
+\[
+ \dot{\hat z}=A_{21}y+A_{22}\hat z+B_2u
+ +L(\dot y-A_{11}y-A_{12}\hat z-B_1u).
+\]
+设 $F=A_{22}-LA_{12}$、$w=\hat z-Ly$，则
+\[
+ \begin{aligned}
+ \dot w&=F\hat z+(A_{21}-LA_{11})y+(B_2-LB_1)u\\
+ &=Fw+(FL+A_{21}-LA_{11})y+(B_2-LB_1)u.
+ \end{aligned}
+\]
+本题 $A_{11}=0,A_{21}=0,B_1=0$，因此最终结构简化为
+\[
+ \dot w=Fw+FLy+B_2u.
+\]
+其状态重构为 $\hat z=w+Ly$，只需输入 $u$ 和测量输出 $y$。
+\end{proofstep}
+\begin{proofstep}{配置观测器的两个特征值}
+设 $L=[l_1\;l_2]^{\mathsf T}$，则
+\[
+ F=\begin{bmatrix}-l_1&1\\-2-l_2&-3\end{bmatrix},\qquad
+ \det(sI-F)=(s+l_1)(s+3)+2+l_2.
+\]
+展开并与目标多项式比较：
+\[
+ \det(sI-F)=s^2+(l_1+3)s+3l_1+2+l_2
+ =(s+5)^2
+\]
+\[
+ l_1+3=10,\qquad 3l_1+2+l_2=25
+ \quad\Longrightarrow\quad l_1=7,\quad l_2=2.
+\]
+于是
+\[
+ FL=\begin{bmatrix}-7&1\\-4&-3\end{bmatrix}
+ \begin{bmatrix}7\\2\end{bmatrix}
+ =\begin{bmatrix}-49+2\\-28-6\end{bmatrix}
+ =\begin{bmatrix}-47\\-34\end{bmatrix}.
+\]
+观测器与状态重构为
+\[
+ \boxed{\begin{aligned}
+  \dot w&=\begin{bmatrix}-7&1\\-4&-3\end{bmatrix}w
+   +\begin{bmatrix}-47\\-34\end{bmatrix}y
+   +\begin{bmatrix}0\\1\end{bmatrix}u,\\
+  \hat x&=\begin{bmatrix}y\\w_1+7y\\w_2+2y\end{bmatrix}.
+ \end{aligned}}
+\]
+定义估计误差 $e_z=\hat z-z$，由形式估计方程减去真实状态方程可得
+$\dot e_z=(A_{22}-LA_{12})e_z=Fe_z$。
+进一步令 $N=F+5I=\begin{bmatrix}-2&1\\-4&2\end{bmatrix}$，则 $N^2=0$，故
+\[
+ e_z(t)=e^{-5t}(I+tN)e_z(0)\longrightarrow0.
+\]
+这说明重复极点虽会产生 $te^{-5t}$ 项，但不影响渐近收敛。
+\end{proofstep}
+
+\medskip\textbf{(2) 输出动态反馈。}
+\begin{proofstep}{先按真实状态反馈匹配闭环多项式}
+先按 $u=Kx+v$ 配置状态反馈极点。所需多项式为
+\[
+ p_c(s)=(s+3)(s^2+s+1)=s^3+4s^2+4s+3.
+\]
+其中共轭极点对应的实二次因子为
+$\left(s+\tfrac12\right)^2+\tfrac34=s^2+s+1$。
+若 $K=[k_1\;k_2\;k_3]$，则
+\[
+ A+BK=\begin{bmatrix}0&1&0\\0&0&1\\k_1&-2+k_2&-3+k_3\end{bmatrix},
+\]
+\[
+ \det(sI-A-BK)=s^3+(3-k_3)s^2+(2-k_2)s-k_1,
+\]
+逐项比较 $s^2,s,1$ 的系数：
+\[
+ 3-k_3=4,\qquad 2-k_2=4,\qquad -k_1=3,
+\]
+故 $K=[-3\;-2\;-1]$。这里使用加号反馈约定 $u=Kx+v$，
+上述负号已经包含在 $K$ 中。
+\end{proofstep}
+\begin{proofstep}{将状态反馈改写为输出动态反馈}
+用估计状态代替真实状态，得到
+\[
+ \boxed{u=-3y-2(w_1+7y)-(w_2+2y)+v
+ =-2w_1-w_2-19y+v.}
+\]
+令 $K_z=[-2\;-1]$、$k_y=-19$，将此式代入观测器，得
+\[
+ \dot w=(F+B_2K_z)w+(FL+B_2k_y)y+B_2v.
+\]
+其中
+\[
+ F+B_2K_z=\begin{bmatrix}-7&1\\-4-2&-3-1\end{bmatrix},\qquad
+ FL+B_2k_y=\begin{bmatrix}-47\\-34-19\end{bmatrix}.
+\]
+完整的二阶输出动态控制器可直接写成
+\[
+ \boxed{\begin{aligned}
+  \dot w&=\begin{bmatrix}-7&1\\-6&-4\end{bmatrix}w
+   +\begin{bmatrix}-47\\-53\end{bmatrix}y
+   +\begin{bmatrix}0\\1\end{bmatrix}v,\\
+  u&=\begin{bmatrix}-2&-1\end{bmatrix}w-19y+v.
+ \end{aligned}}
+\]
+为了检查实际闭环，注意 $\hat x=x+[0\;e_z^{\mathsf T}]^{\mathsf T}$，故
+\[
+ u=Kx+K_ze_z+v,\qquad
+ \dot x=(A+BK)x+BK_ze_z+Bv.
+\]
+同时 $\dot e_z=Fe_z$ 与 $x,v$ 均无关。
+以 $(x,e_z)$ 为闭环坐标，有
+\[
+ \begin{bmatrix}\dot x\\\dot e_z\end{bmatrix}
+ =\begin{bmatrix}A+BK&B\begin{bmatrix}-2&-1\end{bmatrix}\\0&F\end{bmatrix}
+ \begin{bmatrix}x\\e_z\end{bmatrix}
+ +\begin{bmatrix}B\\0\end{bmatrix}v.
+\]
+该矩阵为分块上三角矩阵，行列式等于两个对角块行列式之积，
+因此内部闭环特征多项式是 $p_c(s)(s+5)^2$，满足分离定理。
+\end{proofstep}
+
+\medskip\textbf{(3) 闭环传递函数。}
+传递函数取全系统零初始条件。由于误差方程没有来自 $v$ 的输入，
+当 $e_z(0)=0$ 时恒有 $e_z(t)=0$，于是输出动态反馈与真实状态反馈
+对 $v\mapsto y$ 的作用完全相同。
+将 $u=-3x_1-2x_2-x_3+v$ 代入状态方程，可得
+\[
+ \dot x_1=x_2,\qquad \dot x_2=x_3,\qquad
+ \dot x_3=-3x_1-4x_2-4x_3+v.
+\]
+因 $y=x_1$，消去状态即为 $y^{(3)}+4\ddot y+4\dot y+3y=v$。
+零初始条件下作 Laplace 变换，得到
+\[
+ \boxed{\frac{Y(s)}{V(s)}=C(sI-A-BK)^{-1}B
+ =\frac1{(s+3)(s^2+s+1)}.}
+\]
+两枚观测器极点 $-5$ 影响非零估计误差引起的瞬态，但不出现在
+$v\mapsto y$ 的约简传递函数中：原因是外部输入 $v$ 不激励误差子系统，
+而不是把五阶内部系统误认为三阶系统。
+\end{solution}
+
+\begin{problem}[原题 7]
+受控系统为
+\[
+ \dot x=\begin{bmatrix}0&1&0&0\\0&0&-1&0\\0&0&0&1\\0&0&5&0\end{bmatrix}x
+ +\begin{bmatrix}0\\1\\0\\-2\end{bmatrix}u,
+ \qquad y=\begin{bmatrix}1&0&0&0\end{bmatrix}x.
+\]
+指定闭环传递函数极点为 $-1,-1\pm j,-2$，观测器特征值为
+$-3,-3\pm2j$。设计观测器输出动态反馈系统。
+\end{problem}
+\begin{solution}
+\begin{proofstep}{检验可控性和可观测性}
+按列计算 $B,AB,A^2B,A^3B$，按行计算 $C,CA,CA^2,CA^3$，得到
+\[
+ \mathcal C=\begin{bmatrix}0&1&0&2\\1&0&2&0\\0&-2&0&-10\\-2&0&-10&0\end{bmatrix},\qquad
+ \mathcal O=\begin{bmatrix}1&0&0&0\\0&1&0&0\\0&0&-1&0\\0&0&0&-1\end{bmatrix}.
+\]
+其行列式分别为 $36$ 和 $1$，均非零，故状态反馈和观测器均可按指定极点设计。
+\end{proofstep}
+\begin{proofstep}{按加号反馈约定计算状态反馈增益}
+采用教材约定 $u=Kx+v$，令 $K=[k_1\;k_2\;k_3\;k_4]$，则
+\[
+ A+BK=\begin{bmatrix}
+ 0&1&0&0\\k_1&k_2&k_3-1&k_4\\
+ 0&0&0&1\\-2k_1&-2k_2&5-2k_3&-2k_4
+ \end{bmatrix}.
+\]
+展开 $\det(sI-A-BK)$，并按 $s$ 的幂次合并，得到
+\[
+ \det(sI-A-BK)
+ =s^4+(2k_4-k_2)s^3+(2k_3-k_1-5)s^2+3k_2s+3k_1.
+\]
+指定特征多项式为
+\[
+ (s+1)(s+2)(s^2+2s+2)=s^4+5s^3+10s^2+10s+4.
+\]
+比较各次幂的系数得
+\[
+ \begin{cases}
+ 2k_4-k_2=5,\\
+ 2k_3-k_1-5=10,\\
+ 3k_2=10,\\
+ 3k_1=4.
+ \end{cases}
+\]
+从后两式先求得 $k_1=\tfrac43,k_2=\tfrac{10}3$，再代入前两式得
+$k_3=\tfrac{49}6,k_4=\tfrac{25}6$。因此
+\[
+ \boxed{K=\begin{bmatrix}\frac43&\frac{10}3&\frac{49}6&\frac{25}6\end{bmatrix}.}
+\]
+\end{proofstep}
+
+\begin{proofstep}{建立三阶降维观测器，消去输出导数}
+题目指定三个观测器特征值，而系统有四个状态且 $y=x_1$，故采用三阶降维结构。
+令 $z=[x_2\;x_3\;x_4]^{\mathsf T}$，则
+\[
+ \dot y=A_{12}z,\quad \dot z=A_{22}z+B_2u,
+\]
+\[
+ A_{12}=\begin{bmatrix}1&0&0\end{bmatrix},\quad
+ A_{22}=\begin{bmatrix}0&-1&0\\0&0&1\\0&5&0\end{bmatrix},\quad
+ B_2=\begin{bmatrix}1\\0\\-2\end{bmatrix}.
+\]
+本题分块中的 $A_{11},A_{21},B_1$ 都为零。
+形式上的观测器及误差方程为
+\[
+ \dot{\hat z}=A_{22}\hat z+B_2u+L(\dot y-A_{12}\hat z),
+ \qquad \dot e_z=(A_{22}-LA_{12})e_z,
+\]
+其中误差定义为 $e_z=\hat z-z$。为避免使用 $\dot y$，令
+$w=\hat z-Ly$、$F=A_{22}-LA_{12}$，则
+\[
+ \dot w=\dot{\hat z}-L\dot y=F\hat z+B_2u
+ =Fw+FLy+B_2u,\qquad \hat z=w+Ly.
+\]
+对 $L=[l_1\;l_2\;l_3]^{\mathsf T}$，有
+\[
+ F=\begin{bmatrix}-l_1&-1&0\\-l_2&0&1\\-l_3&5&0\end{bmatrix},
+ \qquad sI-F=\begin{bmatrix}s+l_1&1&0\\l_2&s&-1\\l_3&-5&s\end{bmatrix}.
+\]
+沿第一行展开行列式：
+\[
+ \det(sI-F)=(s+l_1)(s^2-5)-(l_2s+l_3)
+ =s^3+l_1s^2-(l_2+5)s-5l_1-l_3.
+\]
+指定观测器多项式为
+\[
+ (s+3)\bigl((s+3)^2+4\bigr)=s^3+9s^2+31s+39
+\]
+所以系数满足
+\[
+ l_1=9,\qquad -(l_2+5)=31,\qquad -5l_1-l_3=39.
+\]
+依次求解，得到
+\[
+ L=\begin{bmatrix}9\\-36\\-84\end{bmatrix},\quad
+ F=\begin{bmatrix}-9&-1&0\\36&0&1\\84&5&0\end{bmatrix},\quad
+ FL=\begin{bmatrix}-45\\240\\576\end{bmatrix}.
+\]
+其中 $FL$ 的三个分量分别为
+$-9\times9+36=-45$、$36\times9-84=240$、$84\times9-5\times36=576$。
+因此观测器及状态重构为
+\[
+ \boxed{\begin{aligned}
+  \dot w&=Fw+\begin{bmatrix}-45\\240\\576\end{bmatrix}y
+   +\begin{bmatrix}1\\0\\-2\end{bmatrix}u,\\
+  \hat x&=\begin{bmatrix}y\\w_1+9y\\w_2-36y\\w_3-84y\end{bmatrix}.
+ \end{aligned}}
+\]
+\end{proofstep}
+
+\begin{proofstep}{把观测器与反馈律连接成可实施控制器}
+令 $K_z=[\frac{10}3\;\frac{49}6\;\frac{25}6]$，则
+\[
+ u=K\hat x+v=k_1y+K_z(w+Ly)+v
+ =K_zw+(k_1+K_zL)y+v.
+\]
+输出的直接增益为
+\[
+ k_1+K_zL=\frac43+\frac{10}3\times9
+ -\frac{49}6\times36-\frac{25}6\times84
+ =\frac43+30-294-350=-\frac{1838}3.
+\]
+故
+\[
+ \boxed{u=K\hat x+v=K_zw-\frac{1838}3y+v.}
+\]
+记 $k_y=-\tfrac{1838}3$，将 $u$ 从观测器右端消去，可得
+\[
+ \dot w=(F+B_2K_z)w+(FL+B_2k_y)y+B_2v.
+\]
+因为 $B_2=[1\;0\;-2]^{\mathsf T}$，反馈改变 $F$ 的第一行和第三行，
+对应分别加上 $K_z$ 和 $-2K_z$；第二行不变。
+对输出输入列同样计算，得到
+\[
+ FL+B_2k_y=\begin{bmatrix}-45-1838/3\\240\\576+3676/3\end{bmatrix}
+ =\begin{bmatrix}-1973/3\\240\\5404/3\end{bmatrix}.
+\]
+仅以 $y,v$ 为输入的控制器实现为
+\[
+ \boxed{\begin{aligned}
+ \dot w&=\begin{bmatrix}
+ -\frac{17}3&\frac{43}6&\frac{25}6\\
+ 36&0&1\\
+ \frac{232}3&-\frac{34}3&-\frac{25}3
+ \end{bmatrix}w
+ +\begin{bmatrix}-\frac{1973}3\\240\\\frac{5404}3\end{bmatrix}y
+ +\begin{bmatrix}1\\0\\-2\end{bmatrix}v,\\
+ u&=\begin{bmatrix}\frac{10}3&\frac{49}6&\frac{25}6\end{bmatrix}w
+ -\frac{1838}3y+v.
+ \end{aligned}}
+\]
+\end{proofstep}
+\tcbbreak
+\begin{proofstep}{验证分离定理及闭环传递函数极点}
+因为 $\hat x=x+[0\;e_z^{\mathsf T}]^{\mathsf T}$，所以
+$u=Kx+K_ze_z+v$。代入被控对象方程，并与误差方程合并，得到
+\[
+ \begin{bmatrix}\dot x\\\dot e_z\end{bmatrix}
+ =\begin{bmatrix}A+BK&BK_z\\0&F\end{bmatrix}
+ \begin{bmatrix}x\\e_z\end{bmatrix}
+ +\begin{bmatrix}B\\0\end{bmatrix}v.
+\]
+分块上三角结构使其特征多项式分解为
+\[
+ \det(sI-A-BK)\det(sI-F)
+ =(s+1)(s+2)(s^2+2s+2)(s+3)(s^2+6s+13).
+\]
+故全部内部特征值为 $-1,-1\pm j,-2,-3,-3\pm2j$，均位于左半平面。
+零初始条件下，误差方程不受 $v$ 驱动，故 $e_z(t)=0$，
+从而闭环传递函数可按 $u=Kx+v$ 计算。
+为了明确分子，可先由状态方程作 Laplace 变换：
+\[
+ X_2=sY,\qquad s^2Y=-X_3+U,\qquad
+ X_4=sX_3,\qquad (s^2-5)X_3=-2U.
+\]
+在反馈关系 $U=k_1Y+k_2sY+(k_3+k_4s)X_3+V$ 中代入
+$U=s^2Y+X_3$，得到
+\[
+ (s^2-k_2s-k_1)Y+(1-k_3-k_4s)X_3=V.
+\]
+由上述两个被控对象关系还可得 $(s^2-3)X_3=-2s^2Y$。
+因此消去 $X_3$ 后，有
+\[
+ \bigl[(s^2-k_2s-k_1)(s^2-3)
+       -2s^2(1-k_3-k_4s)\bigr]Y=(s^2-3)V.
+\]
+方括号展开正好是已配置的四阶闭环特征多项式，故
+\[
+ \boxed{\frac{Y(s)}{V(s)}
+ =\frac{s^2-3}{(s+1)(s+2)(s^2+2s+2)}.}
+\]
+分子与分母无公因子，因而它的四个极点正是题目指定的闭环传递函数极点。
+三枚观测器极点仅进入非零初始估计误差的响应，不进入这一零状态传递函数。
+\end{proofstep}
+\end{solution}
+\end{document}

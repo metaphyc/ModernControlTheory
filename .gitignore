@@ -3,3 +3,14 @@
 
 /courseware/*
 !/courseware/.gitkeep
+
+# LaTeX 中间文件；保留源码与最终 PDF
+/homework/**/*.aux
+/homework/**/*.log
+/homework/**/*.out
+/homework/**/*.toc
+/homework/**/*.fls
+/homework/**/*.fdb_latexmk
+/homework/**/*.xdv
+/homework/**/*.synctex.gz
+__pycache__/

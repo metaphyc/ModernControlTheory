@@ -1,0 +1,518 @@
+\documentclass[11pt]{article}
+\newcommand{\HomeworkHeader}{习题四}
+\input{../_shared/preamble.tex}
+\begin{document}
+\makeCustomTitle{习题四}
+% 红框选题：6（全部两问）、9、10、13、17、18。
+% 来源 assets/习题四.pdf：第1页 6；第2页 9、10、13；第3页 17、18。
+% 对应教材第103--105页。
+
+\begin{problem}[原题 6]
+确定以下系统同时完全能控、完全能观时，参数的取值范围。
+\begin{align*}
+\text{（1）}\quad
+&A=\begin{bmatrix}-1&1&a\\0&-2&1\\0&0&-3\end{bmatrix},\quad
+B=\begin{bmatrix}0\\0\\1\end{bmatrix},\quad
+C=\begin{bmatrix}0&0&1\end{bmatrix};\\[2mm]
+\text{（2）}\quad
+&A=\begin{bmatrix}0&0&1\\0&1&0\\-2&-3&-5\end{bmatrix},\quad
+B=\begin{bmatrix}0\\1\\a\end{bmatrix},\quad
+C=\begin{bmatrix}0&1&b\end{bmatrix}.
+\end{align*}
+\end{problem}
+\begin{solution}
+\begin{proofstep}{写出本题采用的两个秩判据}
+对三阶单输入单输出系统，定义能控性矩阵与能观性矩阵
+\[
+\mathcal C=[B\ AB\ A^2B],\qquad
+\mathcal O=\begin{bmatrix}C\\CA\\CA^2\end{bmatrix}.
+\]
+完全能控要求 $\operatorname{rank}\mathcal C=3$，完全能观要求
+$\operatorname{rank}\mathcal O=3$。两矩阵都是三阶方阵，因此等价于
+它们的行列式都非零。下面分别计算两问，最后取两个条件的交集。
+\end{proofstep}
+
+\begin{proofstep}{第（1）问：先检查能控性，再检查能观性}
+因为 $B=e_3$，$AB$ 就是 $A$ 的第三列。再乘一次 $A$，得到
+\[
+AB=\begin{bmatrix}a\\1\\-3\end{bmatrix},\qquad
+A^2B=\begin{bmatrix}-a+1-3a\\-2-3\\9\end{bmatrix}
+=\begin{bmatrix}1-4a\\-5\\9\end{bmatrix}.
+\]
+故
+\[
+\mathcal C=\begin{bmatrix}0&a&1-4a\\0&1&-5\\1&-3&9\end{bmatrix},
+\quad
+\det\mathcal C=
+\det\begin{bmatrix}a&1-4a\\1&-5\end{bmatrix}
+=-5a-(1-4a)=-(a+1).
+\]
+因此完全能控当且仅当 $a\ne-1$。
+
+再看能观性。$C=[0\ 0\ 1]$ 选取 $A$ 的第三行，故
+$CA=[0\ 0\ {-3}]=-3C$，进一步 $CA^2=9C$。于是
+\[
+\mathcal O=\begin{bmatrix}0&0&1\\0&0&-3\\0&0&9\end{bmatrix},\qquad
+\operatorname{rank}\mathcal O=1<3
+\]
+对任意 $a$ 都成立。其原因也可直接从方程看出：输出为 $y=x_3$，
+而 $\dot x_3=-3x_3+u$ 与 $x_1,x_2$ 无关。在同一输入下改变 $x_1(0),x_2(0)$，
+输出完全不变，因此无法恢复这两个初值。故两条件没有共同取值：
+\[
+\boxed{\text{不存在使第（1）个系统同时完全能控、完全能观的 }a.}
+\]
+\end{proofstep}
+
+\begin{proofstep}{第（2）问：求完全能控的参数条件}
+由矩阵乘法依次得到
+\[
+AB=\begin{bmatrix}a\\1\\-5a-3\end{bmatrix},\qquad
+A^2B=\begin{bmatrix}-5a-3\\1\\-2a-3+25a+15\end{bmatrix}
+=\begin{bmatrix}-5a-3\\1\\23a+12\end{bmatrix}.
+\]
+于是
+\[
+\mathcal C=\begin{bmatrix}
+0&a&-5a-3\\
+1&1&1\\
+a&-5a-3&23a+12
+\end{bmatrix}.
+\]
+按第一行展开，其行列式为
+\begin{align*}
+\det\mathcal C
+&=-a\bigl((23a+12)-a\bigr)
+  +(-5a-3)\bigl((-5a-3)-a\bigr)\\
+&=-a(22a+12)+(5a+3)(6a+3)\\
+&=8a^2+21a+9.
+\end{align*}
+方程 $8a^2+21a+9=0$ 的判别式为
+$21^2-4\cdot8\cdot9=153=9\cdot17$，故两根为
+\[
+a=\frac{-21\pm3\sqrt{17}}{16}.
+\]
+除去这两个值，系统完全能控。
+\end{proofstep}
+
+\begin{proofstep}{第（2）问：求完全能观的参数条件并取交集}
+分别计算输出行与 $A$ 的乘积：
+\[
+CA=[0\ 1\ b]A=[-2b\ \ 1-3b\ \ -5b],
+\]
+\[
+CA^2=[-2b\ \ 1-3b\ \ -5b]A
+=[10b\ \ 1+12b\ \ 23b].
+\]
+因此
+\[
+\mathcal O=\begin{bmatrix}
+0&1&b\\
+-2b&1-3b&-5b\\
+10b&1+12b&23b
+\end{bmatrix}.
+\]
+按第一行展开并合并同类项：
+\begin{align*}
+\det\mathcal O
+&=-\bigl((-2b)(23b)-(-5b)(10b)\bigr)\\
+&\quad+b\bigl((-2b)(1+12b)-(1-3b)(10b)\bigr)\\
+&=-4b^2+b(6b^2-12b)=2b^2(3b-8).
+\end{align*}
+所以完全能观当且仅当 $b\ne0$ 且 $b\ne\tfrac83$。
+能控条件只含 $a$，能观条件只含 $b$，二者同时成立的完整范围为
+\[
+\boxed{a\notin\left\{\frac{-21+3\sqrt{17}}{16},\frac{-21-3\sqrt{17}}{16}\right\},
+\qquad b\notin\left\{0,\frac83\right\}.}
+\]
+\end{proofstep}
+\end{solution}
+
+\begin{problem}[原题 9]
+设 $n$ 阶单输入单输出系统 $(A,b,c)$ 既能控又能观。证明：当 $n\ge2$ 时，$A$ 与 $bc$ 不可交换。
+\end{problem}
+\begin{solution}
+\begin{proofstep}{把可交换假设写成可以利用的等式}
+本题 $b$ 是 $n\times1$ 列向量、$c$ 是 $1\times n$ 行向量，因此 $bc$ 是 $n\times n$
+矩阵，可以讨论它与 $A$ 是否交换。
+若 $b=0$，系统必不能控；若 $c=0$，系统必不能观。故题设保证 $b,c$ 均非零。
+
+反设 $A$ 与 $bc$ 可交换，则由矩阵乘法的结合律有
+\[
+(Ab)c=b(cA).
+\]
+这个等式把 $Ab$ 与 $b$ 联系起来。为了去掉左边的行向量 $c$，取
+\[
+v=\frac{c^{\mathsf T}}{cc^{\mathsf T}}.
+\]
+由于 $c\ne0$，分母 $cc^{\mathsf T}>0$，且 $cv=1$。
+\end{proofstep}
+
+\begin{proofstep}{证明输入方向必须成为一个特征方向}
+将交换等式右乘 $v$，得到
+\[
+(Ab)(cv)=b(cAv),\qquad
+Ab=\lambda b,\quad \lambda=cAv.
+\]
+$cAv$ 为标量，所以这表明 $b$ 是 $A$ 的右特征向量。
+继续乘 $A$，有 $A^2b=A(\lambda b)=\lambda Ab=\lambda^2b$；归纳得
+$A^kb=\lambda^kb$。也就是说，输入方向及其经系统矩阵反复传播所得的方向都平行于 $b$。
+\end{proofstep}
+
+\begin{proofstep}{用能控矩阵的秩得到矛盾}
+于是能控性矩阵成为
+\[
+\mathcal C=[b\ Ab\ \cdots\ A^{n-1}b]
+=b[1\ \lambda\ \cdots\ \lambda^{n-1}].
+\]
+因为 $b\ne0$，所有列均在一维空间 $\operatorname{span}\{b\}$ 中，且第一列非零，所以
+\[
+\operatorname{rank}\mathcal C=1<n\qquad(n\ge2).
+\]
+这与完全能控所要求的秩 $n$ 矛盾。因此原假设不成立，即
+\[
+\boxed{A(bc)\ne(bc)A.}
+\]
+$n\ge2$ 的条件不可省略：当 $n=1$ 时二者均为标量，自然可交换。
+\end{proofstep}
+\end{solution}
+
+\begin{problem}[原题 10]
+$n$ 阶单输入单输出系统 $(A,b,c)$ 满足
+\[
+cA^{n-1}b=a\ne0,\qquad cA^kb=0\quad(k=0,1,\ldots,n-2).
+\]
+证明该系统既能控又能观。
+\end{problem}
+\begin{solution}
+\begin{proofstep}{将题设的标量乘积组织成一个方阵}
+要同时证明能控和能观，需要证明下列两个 $n\times n$ 矩阵可逆：
+\[
+\mathcal C=[b\ Ab\ \cdots\ A^{n-1}b],\qquad
+\mathcal O=\begin{bmatrix}c\\cA\\\vdots\\cA^{n-1}\end{bmatrix}.
+\]
+题设给出的量恰好是二者相乘后的元素，因此考虑
+\[
+H=\mathcal O\mathcal C
+=\begin{bmatrix}
+cb&cAb&\cdots&cA^{n-1}b\\
+cAb&cA^2b&\cdots&cA^nb\\
+\vdots&\vdots&&\vdots\\
+cA^{n-1}b&cA^nb&\cdots&cA^{2n-2}b
+\end{bmatrix}.
+\]
+用从0开始的行列编号，$H_{ij}=(cA^i)(A^jb)=cA^{i+j}b$。
+当 $i+j<n-1$ 时，题设保证该元素为0；当 $i+j=n-1$ 时，该元素为 $a$。
+所以反对角线全为非零数 $a$，它左上侧全为0，右下侧元素无需知道。
+\end{proofstep}
+
+\begin{proofstep}{逆置列顺序，将已知结构变为三角形}
+令 $J$ 为逆序置换矩阵，即 $J_{i,n-1-i}=1$、其余元素为0。
+右乘 $J$ 相当于把第1列与第 $n$ 列的位置互换，并依此逆置全部列。
+新矩阵的元素为
+\[
+(HJ)_{ij}=cA^{i+n-1-j}b.
+\]
+当 $i<j$ 时指数小于 $n-1$，元素为0；当 $i=j$ 时指数为 $n-1$，元素为 $a$。
+因此 $HJ$ 是下三角矩阵，主对角线全为 $a$，其行列式为
+\[
+\det(HJ)=a^n\ne0.
+\]
+列序完全逆置共有 $n(n-1)/2$ 个逆序对，故
+$\det J=(-1)^{n(n-1)/2}$。由 $\det(HJ)=\det H\det J$，得到
+\[
+\det H=(-1)^{n(n-1)/2}a^n\ne0.
+\]
+\end{proofstep}
+
+\begin{proofstep}{从乘积可逆推出两个秩判据同时成立}
+因为 $H=\mathcal O\mathcal C$，有
+\[
+\det\mathcal O\,\det\mathcal C=\det H\ne0.
+\]
+两个数的乘积非零，说明它们分别非零。因此 $\mathcal C$ 可逆、秩为 $n$，系统完全能控；
+$\mathcal O$ 也可逆、秩为 $n$，系统完全能观。
+本证明不需要 $cA^kb$ 在 $k\ge n$ 时的具体取值，且对 $n=1$ 也成立。
+\end{proofstep}
+\end{solution}
+
+\begin{problem}[原题 13]
+定出下列单输入单输出系统的能观规范型和变换矩阵：
+\[
+\dot x=\begin{bmatrix}-1&-2&-2\\0&-1&1\\1&0&1\end{bmatrix}x
++\begin{bmatrix}2\\0\\1\end{bmatrix}u,
+\qquad y=\begin{bmatrix}1&1&0\end{bmatrix}x.
+\]
+\end{problem}
+\begin{solution}
+\begin{proofstep}{确认系统完全能观}
+将题面矩阵记为 $A,b,c$。左乘输出行 $c=[1\ 1\ 0]$，相当于取 $A$ 前两行之和，故
+\[
+cA=\begin{bmatrix}-1&-3&-1\end{bmatrix},\qquad
+cA^2=\begin{bmatrix}0&5&-2\end{bmatrix},
+\]
+\[
+\mathcal O=\begin{bmatrix}c\\cA\\cA^2\end{bmatrix}
+=\begin{bmatrix}1&1&0\\-1&-3&-1\\0&5&-2\end{bmatrix}.
+\]
+按第一行展开，得
+\[
+\det\mathcal O=1\bigl(6+5\bigr)-1\bigl(2-0\bigr)=9\ne0.
+\]
+因此系统完全能观，可以构造三阶能观规范型。
+\end{proofstep}
+
+\begin{proofstep}{用特征多项式确定目标规范型}
+计算特征多项式：
+\begin{align*}
+\det(sI-A)
+&=\det\begin{bmatrix}s+1&2&2\\0&s+1&-1\\-1&0&s-1\end{bmatrix}\\
+&=(s+1)^2(s-1)+2+2(s+1)\\
+&=s^3+s^2+s+3.
+\end{align*}
+采用教材第4.4节（第95--97页）的末列伴随型，目标矩阵与输出行为
+\[
+A_o=\begin{bmatrix}0&0&-3\\1&0&-1\\0&1&-1\end{bmatrix},\qquad
+c_o=[0\ 0\ 1].
+\]
+最后一列依次是特征多项式常数项、一次项、二次项系数的相反数。
+选择 $c_o$ 后，第三个新状态直接等于输出，即 $z_3=y$。
+\end{proofstep}
+
+\begin{proofstep}{从输出开始构造新坐标的三行}
+先写 $z=Sx$，将 $S$ 的三行记为 $\ell_1,\ell_2,\ell_3$。
+要使 $y=z_3$，必须取 $\ell_3=c$。
+要使新状态矩阵为 $A_o$，必须满足 $SA=A_oS$，也就是
+\[
+\ell_1A=-3\ell_3,\qquad
+\ell_2A=\ell_1-\ell_3,\qquad
+\ell_3A=\ell_2-\ell_3.
+\]
+从最后一个等式往前计算，得到
+\[
+\ell_2=cA+c,\qquad
+\ell_1=\ell_2A+c=cA^2+cA+c.
+\]
+第一个等式由 Cayley--Hamilton 定理保证：
+\[
+\ell_1A=c(A^3+A^2+A)=-3c=-3\ell_3.
+\]
+所以从原坐标到新坐标的变换为
+\[
+S=\begin{bmatrix}cA^2+cA+c\\cA+c\\c\end{bmatrix}
+=\begin{bmatrix}0&3&-3\\0&-2&-1\\1&1&0\end{bmatrix},\qquad \det S=-9.
+\]
+这里 $\det S\ne0$，所以新坐标没有丢失任何状态信息。
+若把坐标变换写成 $x=Tz$，则 $T=S^{-1}$，由消元得到
+\[
+\boxed{T=S^{-1}=\begin{bmatrix}
+-\tfrac19&\tfrac13&1\\
+\tfrac19&-\tfrac13&0\\
+-\tfrac29&-\tfrac13&0
+\end{bmatrix},\qquad x=Tz.}
+\]
+这里 $S$ 将旧坐标映为新坐标，$T$ 将新坐标映回旧坐标，二者方向相反。
+\end{proofstep}
+
+\begin{proofstep}{计算输入列和输出行，写出完整规范型}
+由于 $z=Sx$，有
+\[
+\dot z=SAS^{-1}z+Sbu,\qquad y=cS^{-1}z.
+\]
+第三步已保证 $SAS^{-1}=A_o$。另外，直接计算
+\[
+Sb=\begin{bmatrix}0&3&-3\\0&-2&-1\\1&1&0\end{bmatrix}
+\begin{bmatrix}2\\0\\1\end{bmatrix}
+=\begin{bmatrix}-3\\-1\\2\end{bmatrix},
+\]
+而 $S$ 的第三行是 $c$，所以 $cS^{-1}=e_3^{\mathsf T}SS^{-1}=[0\ 0\ 1]$。
+最终得到
+\[
+\boxed{
+\dot z=\underbrace{\begin{bmatrix}0&0&-3\\1&0&-1\\0&1&-1\end{bmatrix}}_{SAS^{-1}}z
++\underbrace{\begin{bmatrix}-3\\-1\\2\end{bmatrix}}_{Sb}u,
+\qquad y=\underbrace{\begin{bmatrix}0&0&1\end{bmatrix}}_{cS^{-1}}z.}
+\]
+\end{proofstep}
+
+\begin{proofstep}{核对规范型的输入输出关系}
+从各行方程出发，在零初始条件下有
+\[
+sZ_1=-3Z_3-3U,\qquad
+sZ_2=Z_1-Z_3-U,\qquad
+sZ_3=Z_2-Z_3+2U.
+\]
+由最后一式 $Z_2=(s+1)Z_3-2U$；代入第二式，得到
+$Z_1=(s^2+s+1)Z_3-(2s-1)U$。
+再代入第一式，得
+\[
+(s^3+s^2+s+3)Z_3=(2s^2-s-3)U.
+\]
+由于 $Y=Z_3$，传递函数为
+\[
+G(s)=\frac{2s^2-s-3}{s^3+s^2+s+3},
+\]
+与直接计算原系统的 $c(sI-A)^{-1}b$ 相同。
+输入列各分量也可以通过教材公式核对：
+\[
+\beta_2=cb=2,\quad
+\beta_1=cAb+cb=-1,\quad
+\beta_0=cA^2b+cAb+cb=-3
+\]
+恰好按 $[\beta_0\ \beta_1\ \beta_2]^{\mathsf T}$ 的顺序组成 $Sb$。
+\end{proofstep}
+\end{solution}
+
+\begin{problem}[原题 17]
+线性定常系统为 $\dot x=Ax+Bu$、$y=Cx$。采用输出反馈 $u=Fy+v$ 后，闭环系统为
+\[
+\dot x=(A+BFC)x+Bv,\qquad y=Cx.
+\]
+证明 $(A+BFC,B,C)$ 能控能观的充要条件为 $(A,B,C)$ 能控能观。
+\end{problem}
+\begin{solution}
+\begin{proofstep}{明确反馈符号与需要比较的判据}
+设 $B\in\mathbb R^{n\times m}$、$C\in\mathbb R^{p\times n}$、$F\in\mathbb R^{m\times p}$。
+按题面的正号反馈 $u=Fy+v=FCx+v$，代入原方程得到
+$\dot x=(A+BFC)x+Bv$。闭环的外部输入变为 $v$，输入矩阵仍为 $B$，输出矩阵仍为 $C$。
+
+记 $A_f=A+BFC$。PBH 判据要求：对任意 $\lambda\in\mathbb C$，
+\[
+(A_f,B)\text{ 能控}\iff
+\operatorname{rank}[\lambda I-A_f\ B]=n\quad\text{对所有 }\lambda;
+\]
+\[
+(A_f,C)\text{ 能观}\iff
+\operatorname{rank}\begin{bmatrix}\lambda I-A_f\\C\end{bmatrix}=n
+\quad\text{对所有 }\lambda.
+\]
+因此只需证明反馈前后这两个矩阵的秩分别相同。
+\end{proofstep}
+
+\begin{proofstep}{比较能控性：构造可逆的列变换}
+在能控 PBH 矩阵中，反馈多出的 $-BFC$ 是输入列 $B$ 的线性组合。
+因此可以用列变换消去它。具体地，令
+\[
+R_F=\begin{bmatrix}I_n&0\\-FC&I_m\end{bmatrix},\qquad
+R_F^{-1}=\begin{bmatrix}I_n&0\\FC&I_m\end{bmatrix}.
+\]
+逐块相乘得到
+\[
+[\lambda I-A-BFC\ \ B]
+=[\lambda I-A\ \ B]
+R_F.
+\]
+第一组列为 $(\lambda I-A)I_n+B(-FC)$，第二组列为
+$(\lambda I-A)0+BI_m$，正是左边的两组列。
+由于右乘可逆矩阵不改变秩，故
+\[
+\operatorname{rank}[\lambda I-A-BFC\ \ B]
+=\operatorname{rank}[\lambda I-A\ \ B].
+\]
+对所有 $\lambda$ 同时使用此式，得到
+$(A+BFC,B)$ 能控当且仅当 $(A,B)$ 能控。
+\end{proofstep}
+
+\begin{proofstep}{比较能观性：构造可逆的行变换}
+能观 PBH 矩阵中，多出的 $-BFC$ 是输出行 $C$ 的线性组合。
+相应地取行变换矩阵
+\[
+L_F=\begin{bmatrix}I_n&-BF\\0&I_p\end{bmatrix},\qquad
+L_F^{-1}=\begin{bmatrix}I_n&BF\\0&I_p\end{bmatrix}.
+\]
+直接相乘，上方行块为 $I_n(\lambda I-A)-BFC$，下方行块为 $C$，所以
+\[
+\begin{bmatrix}\lambda I-A-BFC\\C\end{bmatrix}
+=L_F\begin{bmatrix}\lambda I-A\\C\end{bmatrix}.
+\]
+左乘可逆矩阵不改变秩，故对于每个 $\lambda$，反馈前后的能观 PBH 秩均相同。
+于是 $(A+BFC,C)$ 能观当且仅当 $(A,C)$ 能观。
+\end{proofstep}
+
+\begin{proofstep}{合并能控、能观两项结论}
+若原系统能控且能观，第二、三步分别保证闭环也能控且能观，这是充分性。
+若闭环能控且能观，利用同样的秩等式反向推回，原系统也能控且能观，这是必要性。
+综上，
+\[
+\boxed{(A+BFC,B,C)\text{ 能控能观}\iff(A,B,C)\text{ 能控能观}.}
+\]
+整个论证只使用可逆行、列变换，没有对 $F$ 的取值作限制，也没有假定闭环稳定。
+\end{proofstep}
+\end{solution}
+
+\begin{problem}[原题 18]
+开环系统为
+\[
+A=\begin{bmatrix}0&1\\-1&0\end{bmatrix},\qquad
+B=\begin{bmatrix}0\\1\end{bmatrix},\qquad
+C=\begin{bmatrix}1&0\end{bmatrix}.
+\]
+证明该系统能控能观，但不存在常数输出反馈增益 $K$ 使 $A+BKC$ 的特征根全在左半平面。
+\end{problem}
+\begin{solution}
+\begin{proofstep}{检查开环系统的能控性与能观性}
+先计算
+\[
+AB=\begin{bmatrix}0&1\\-1&0\end{bmatrix}\begin{bmatrix}0\\1\end{bmatrix}
+=\begin{bmatrix}1\\0\end{bmatrix},\qquad
+CA=[1\ 0]\begin{bmatrix}0&1\\-1&0\end{bmatrix}=[0\ 1].
+\]
+因此
+\[
+\mathcal C=[B\ AB]=\begin{bmatrix}0&1\\1&0\end{bmatrix},\qquad
+\mathcal O=\begin{bmatrix}C\\CA\end{bmatrix}
+=\begin{bmatrix}1&0\\0&1\end{bmatrix}.
+\]
+其行列式分别为 $-1$ 和 $1$，都不为零，所以系统完全能控且完全能观。
+\end{proofstep}
+
+\begin{proofstep}{写出所有允许的静态输出反馈闭环}
+本题输入、输出都是标量，故静态输出反馈矩阵 $K$ 实际上只能是一个实数 $k$。
+由 $y=x_1$，正号反馈 $u=ky+v$ 等于 $u=kx_1+v$。
+因此
+\[
+BkC=\begin{bmatrix}0\\1\end{bmatrix}k[1\ 0]
+=\begin{bmatrix}0&0\\k&0\end{bmatrix},
+\]
+\[
+A_k=A+BkC=\begin{bmatrix}0&1\\k-1&0\end{bmatrix},\qquad
+\det(sI-A_k)=\det\begin{bmatrix}s&-1\\1-k&s\end{bmatrix}=s^2+1-k.
+\]
+任意 $k$ 都只能改变特征多项式的常数项，一次项始终为零。
+\end{proofstep}
+
+\begin{proofstep}{证明不存在两个实部均为负的闭环特征值}
+因为 $\operatorname{tr}A_k=0$，两特征值满足 $\lambda_1+\lambda_2=0$。
+若它们实部都严格小于0，那么
+$\operatorname{Re}(\lambda_1+\lambda_2)<0$，与和为0矛盾。
+故仅由迹就已证明：不存在使 $A_k$ 为 Hurwitz 矩阵的 $k$。
+
+为了看清不同参数下具体发生什么，再解 $s^2+1-k=0$：
+\begin{itemize}
+\item $k<1$ 时，特征值为 $\pm\mathrm i\sqrt{1-k}$，均在虚轴上且互异。
+自由运动是无阻尼振荡，虽有界却不趋于零，因而不是渐近稳定。
+\item $k=1$ 时，$A_k=\begin{bmatrix}0&1\\0&0\end{bmatrix}$，有 $A_k^2=0$。
+此时 $e^{A_kt}=I+tA_k$，故 $x_1(t)=x_1(0)+tx_2(0)$、$x_2(t)=x_2(0)$。
+只要 $x_2(0)\ne0$ 就会线性增长，系统不稳定。
+\item $k>1$ 时，特征值为 $\pm\sqrt{k-1}$，其中一个严格为正，沿相应特征方向指数增长，系统不稳定。
+\end{itemize}
+因此
+\[
+\boxed{\nexists\,k\in\mathbb R\quad\text{使 }A+BkC\text{ 为 Hurwitz 矩阵}.}
+\]
+\end{proofstep}
+
+\begin{proofstep}{说明结论为何不与能控、能观性矛盾}
+能控性保证可以通过完整状态反馈配置极点，但这里使用的静态输出反馈只允许访问
+$y=x_1$，无法直接加入 $x_2$ 的反馈项。
+例如，若允许完整状态反馈 $u=-x_1-2x_2+v$，则闭环矩阵变为
+\[
+\begin{bmatrix}0&1\\-2&-2\end{bmatrix},\qquad
+\det(sI-A_{\rm cl})=s^2+2s+2,
+\]
+其特征值为 $-1\pm\mathrm i$，确实渐近稳定。
+但 $u=-x_1-2x_2+v$ 不能写成本题允许的 $u=ky+v$。
+同样，能观性意味着可以利用一段时间内的输入输出信息重构状态，并不意味着
+单个时刻的标量 $y$ 已等于完整状态。因此这些性质与本题结论相容。
+\end{proofstep}
+\end{solution}
+\end{document}
